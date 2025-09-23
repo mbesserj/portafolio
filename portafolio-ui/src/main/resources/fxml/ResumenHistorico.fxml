@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.app.ui.controller.FiltroPortafolio?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.ui.controller.ResumenHistoricoController">
+    <top>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label styleClass="titulo-vista" text="Resumen Histórico de Resultados" />
+            <FiltroPortafolio fx:id="filtroGrupo" />
+        </VBox>
+    </top>
+    <center>
+        <TableView fx:id="tableViewResultados">
+            <columns>
+                <TableColumn fx:id="colNombreInstrumento" prefWidth="250.0" text="Instrumento" />
+                <TableColumn fx:id="colCostoFifo" prefWidth="150.0" text="Costo FIFO" />
+                <TableColumn fx:id="colGasto" prefWidth="150.0" text="Gastos" />
+                <TableColumn fx:id="colDividendo" prefWidth="150.0" text="Dividendos" />
+                <TableColumn fx:id="colUtilidad" prefWidth="150.0" text="Utilidad" />
+                <TableColumn fx:id="colTotal" prefWidth="150.0" text="Total Utilidad" />
+            </columns>
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </BorderPane.margin>
+        </TableView>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 10;">
+            <ProgressIndicator fx:id="progressIndicator" visible="false" prefWidth="25" prefHeight="25" />
+            <Label text="Utilidad Total:" style="-fx-font-weight: bold;" />
+            <Label fx:id="lblTotalUtilidad" text="0" style="-fx-font-weight: bold;" />
+        </HBox>
+    </bottom>
+</BorderPane>

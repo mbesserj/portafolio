@@ -1,0 +1,48 @@
+/*
+    Created on : 24 ago 2025, 1:14:25 p.m.
+    Author     : maxbesser
+*/
+
+/* Un estilo base para todos los botones para darles un aspecto uniforme */
+.button {
+    -fx-font-weight: bold;
+}
+
+/* Estilo para botones de acciones peligrosas o destructivas (rojo) */
+.button-peligro {
+    -fx-base: #f44336;
+    -fx-text-fill: white;
+}
+
+/* Estilo para botones de acciones de confirmación o éxito (verde) */
+.button-exito {
+    -fx-base: #4CAF50;
+    -fx-text-fill: white;
+}
+
+/* Estilo para botones de acciones especiales o primarias (azul) */
+.button-accion {
+    -fx-base: #2196F3;
+    -fx-text-fill: white;
+}
+
+/* Estilo para un título principal en una vista */
+.titulo-vista {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Clase para centrar el contenido de cualquier celda */
+.centered-column-cell {
+    -fx-alignment: CENTER;
+}
+
+/* Clase para alinear a la derecha el contenido de cualquier celda */
+.right-aligned-column-cell {
+    -fx-alignment: CENTER-RIGHT;
+}
+
+/* Estilo para destacar filas en negrita (subtotales, totales, etc.) */
+.bold-row {
+    -fx-font-weight: bold;
+}
