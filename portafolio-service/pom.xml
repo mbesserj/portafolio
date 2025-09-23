@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.app</groupId>
+        <artifactId>portafolio</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>portafolio-service</artifactId>
+    <packaging>jar</packaging>
+    <name>portafolio-service</name>
+
+    <dependencies>
+        <!-- El módulo de servicio NECESITA el módulo del modelo para funcionar -->
+        <dependency>
+            <groupId>com.app</groupId>
+            <artifactId>portafolio-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.app</groupId>
+            <artifactId>portafolio-normalizar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.app</groupId>
+            <artifactId>portafolio-etl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.app</groupId>
+            <artifactId>portafolio-costing</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        
+        <!-- Dependencias para Spring Security -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>6.5.3</version> <!-- O la versión que estés usando -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId> <!-- O la versión que estés usando -->
+        </dependency>
+        
+        <!-- API de Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
+</project>
