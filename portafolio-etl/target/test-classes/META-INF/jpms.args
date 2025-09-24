@@ -1,0 +1,4 @@
+--patch-module
+com.app.portafolio.etl=_
+--add-reads
+com.app.portafolio.etl=ALL-UNNAMED
