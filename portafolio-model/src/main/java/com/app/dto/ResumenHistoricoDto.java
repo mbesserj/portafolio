@@ -1,15 +1,15 @@
 package com.app.dto;
 
-import com.app.repository.InstrumentoData;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.app.interfaces.InstrumentoDataInterfaz;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class ResumenHistoricoDto implements InstrumentoData {
+public class ResumenHistoricoDto implements InstrumentoDataInterfaz {
 
     private Long instrumentoId;
     private String nemo;
