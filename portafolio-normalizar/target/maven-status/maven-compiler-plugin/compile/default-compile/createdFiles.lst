@@ -1,0 +1,5 @@
+com/app/normalizar/NormalizarDataService.class
+com/app/normalizar/EntidadCacheManager.class
+module-info.class
+com/app/normalizar/NormalizarDatos.class
+com/app/main/Main.class

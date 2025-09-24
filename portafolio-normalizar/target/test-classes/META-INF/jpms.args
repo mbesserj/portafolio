@@ -1,0 +1,4 @@
+--patch-module
+com.app.portafolio.normalizar=_
+--add-reads
+com.app.portafolio.normalizar=ALL-UNNAMED
