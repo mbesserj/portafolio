@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static com.app.ui.util.FormatUtils.createNumericCellFactory;
-import com.app.repositorio.KardexRepositoryImpl;
+import com.costing.api.KardexApi;
 import java.io.IOException;
 import java.util.ResourceBundle;
 import javafx.fxml.FXMLLoader;
@@ -76,10 +76,10 @@ public class KardexController implements MainPaneAware {
     private TableColumn<KardexReporteDto, BigDecimal> colMonto;
 
     // --- Servicios del Core ---
-    private final KardexRepositoryImpl kardexService;
+    private final KardexApi kardexService;
     private final ServiceFactory serviceFactory;
 
-    public KardexController(KardexRepositoryImpl kardexService, ServiceFactory serviceFactory, ResourceBundle resourceBundle) {
+    public KardexController(KardexApi kardexService, ServiceFactory serviceFactory, ResourceBundle resourceBundle) {
         this.kardexService = kardexService;
         this.serviceFactory = serviceFactory;
         this.resourceBundle = resourceBundle;

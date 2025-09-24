@@ -1,283 +1,160 @@
 package com.app.ui.controller;
 
-import com.app.repository.PrecioRepository;
-import com.app.repository.ResultadoInstrumentoRepository;
-import com.app.repository.ResumenHistoricoRepository;
-import com.app.repository.TipoMovimientoRepository;
-import com.app.repositorio.KardexRepositoryImpl;
-import com.app.repositorio.PrecioRepositoryImpl;
-import com.app.repositorio.ResultadoInstrumentoRepositoryImpl;
-import com.app.repositorio.ResumenHistoricoRepositoryImpl;
-import com.app.repositorio.TipoMovimientoRepositoryImpl;
-import com.app.repositorio.TransaccionRepository;
-import com.app.ui.service.NavigatorService;
+import com.app.dto.*;
+import com.app.entities.*;
+import com.app.repositorio.*;
+import com.app.repository.*;
+import com.app.service.*;
+import com.costing.api.CostingApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.app.enums.ListaEnumsCustodios;
+
+import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Supplier;
-import com.app.repository.KardexRepository;
-import com.app.service.AuthenticationService;
-import com.app.service.ConfrontaService;
-import com.app.service.CostService;
-import com.app.service.CustodioService;
-import com.app.service.EmpresaService;
-import com.app.service.FiltroService;
-import com.app.service.FusionInstrumentoService;
-import com.app.service.InstrumentoService;
-import com.app.service.KardexService;
-import com.app.service.NormalizarService;
-import com.app.service.OperacionesTrxsService;
-import com.app.service.PerfilService;
-import com.app.service.ProblemasTrxsService;
-import com.app.service.ProcesoCargaDiaria;
-import com.app.service.ProcesoCargaInicial;
-import com.app.service.ProcesoCosteoInicial;
-import com.app.service.ResultadoInstrumentoService;
-import com.app.service.ResumenHistoricoService;
-import com.app.service.ResumenPortafolioService;
-import com.app.service.ResumenSaldoEmpresaService;
-import com.app.service.SaldoActualService;
-import com.app.service.SaldoMensualService;
-import com.app.service.SaldoService;
-import com.app.service.TipoMovimientosService;
-import com.app.service.TransaccionService;
-import com.app.service.UsuarioService;
 
+/**
+ * Clase ÚNICA y centralizada que gestiona la creación de todos los servicios y
+ * actúa como el punto de entrada (Facade) para la interfaz de usuario.
+ * Esta clase fusiona las responsabilidades de ServiceFactory y PortafolioFacade.
+ */
 public class ServiceFactory {
 
+    private static final Logger logger = LoggerFactory.getLogger(ServiceFactory.class);
+
+    // --- Recursos de la UI ---
     private NavigatorService navigatorService;
     private ResourceBundle resourceBundle;
-    private final Map<Class<?>, Object> serviceCache = new HashMap<>();
+    private final Map<Class<?>, Supplier<?>> controllerSuppliers = new HashMap<>();
 
-    // --- Instanciación de Repositorios y Servicios ---
-    // Repositorios
-    private final KardexRepository kardexRepService = new KardexRepositoryImpl();
+    // --- Instanciación ÚNICA de Repositorios ---
+    private final KardexApi kardexRepService = new KardexApi();
     private final PrecioRepository precioRepService = new PrecioRepositoryImpl();
-    private final TipoMovimientoRepository tipoMovimientoService = new TipoMovimientoRepositoryImpl();
-    private final TransaccionRepository transaccionRepository = new TransaccionRepository();
+    private final SaldoRepository saldoRepService = new SaldosRepositoryImpl();
+    private final TipoMovimientoRepository tipoMovimientoRepo = new TipoMovimientoRepositoryImpl();
     private final ResumenHistoricoRepository resumenHistoricoRepository = new ResumenHistoricoRepositoryImpl();
-    private final ResultadoInstrumentoRepository resultadoInstrumentoRepository = new ResultadoInstrumentoRepositoryImpl(); 
+    private final ResultadoInstrumentoRepository resultadoInstrumentoRepository = new ResultadoInstrumentoRepositoryImpl();
+    private final CostingApi costeoService = new CostingApi();
+    private final PortafolioFacade facadeService = new PortafolioFacade();
 
-    // Servicios
-    private final SaldoActualService saldoActualService = new SaldoActualService(kardexRepService, precioRepService);
-    private final TipoMovimientosService tipoMovimientosService = new TipoMovimientosService(tipoMovimientoService);
-    private final ProcesoCosteoInicial procesoCosteoInicial = new ProcesoCosteoInicial();
-    private final ProcesoCargaDiaria cargaDiariaService = new ProcesoCargaDiaria();
-    private final ProcesoCargaInicial cargaInicialSaldos = new ProcesoCargaInicial();
-    private final CustodioService custodioService = new CustodioService();
+    // --- Instanciación ÚNICA de Servicios Core ---
+    private final AuthenticationService authenticationService = new AuthenticationService();
     private final EmpresaService empresaService = new EmpresaService();
+    private final CustodioService custodioService = new CustodioService();
     private final InstrumentoService instrumentoService = new InstrumentoService();
-    private final OperacionesTrxsService operacionesTrxsService = new OperacionesTrxsService();
-    private final PerfilService perfilService = new PerfilService();
-    private final ProblemasTrxsService problemasTrxsService = new ProblemasTrxsService();
-    private final SaldoMensualService saldoMensualService = new SaldoMensualService();
     private final TransaccionService transaccionService = new TransaccionService();
-    private final UsuarioService usuarioService = new UsuarioService();
-    private final CostService costeoService = new CostService();
-    private final FusionInstrumentoService fusionService = new FusionInstrumentoService();
-    private final NormalizarService normalizarService = new NormalizarService();
-    private final AuthenticationService authService = new AuthenticationService();
-    private final ResumenSaldoEmpresaService resumenSaldosService = new ResumenSaldoEmpresaService();
+    private final FiltroService filtroService = new FiltroService();
+    private final ResumenSaldoEmpresaService resumenSaldoEmpresaService = new ResumenSaldoEmpresaService();
+    private final SaldoMensualService saldoMensualService = new SaldoMensualService();
     private final ConfrontaService confrontaService = new ConfrontaService();
-
-    private final SaldoService saldoService = new SaldoService();
-    private final KardexService kardexService = new KardexService();
+    private final OperacionesTrxsService operacionesTrxsService = new OperacionesTrxsService();
+    private final ProblemasTrxsService problemasTrxsService = new ProblemasTrxsService();
+    private final ProcesoCargaDiaria procesoCargaDiaria = new ProcesoCargaDiaria();
+    private final ProcesoCargaInicial procesoCargaInicial = new ProcesoCargaInicial();
+    private final ProcesoCosteoInicial procesoCosteoInicial = new ProcesoCosteoInicial();
+    private final NormalizarService normalizarService = new NormalizarService();
+    private final FusionInstrumentoService fusionInstrumentoService = new FusionInstrumentoService();
+    private final UsuarioService usuarioService = new UsuarioService();
+    private final PerfilService perfilService = new PerfilService();
+    private final SaldosRepositoryImpl saldoService = new SaldosRepositoryImpl();
+    private final KardexRepositoryImpl kardexService = new KardexRepositoryImpl();
     private final ResumenHistoricoService resumenHistoricoService = new ResumenHistoricoService(resumenHistoricoRepository);
-    private final ResumenPortafolioService resumenPortafolioService = new ResumenPortafolioService(kardexService, saldoService, transaccionRepository);    
-    private final ResultadoInstrumentoService resultadoInstrumentoService = new ResultadoInstrumentoService(saldoService, kardexService, resultadoInstrumentoRepository); 
+    private final SaldoActualService saldoActualService = new SaldoActualService(kardexRepService, precioRepService);
+    private final TipoMovimientosService tipoMovimientosService = new TipoMovimientosService(tipoMovimientoRepo);
 
-    // --- Getters para todos los servicios ---
-    public ResumenHistoricoService getResumenHistoricoService() {
-        return resumenHistoricoService;
+    public ServiceFactory() {
+        initializeControllerSuppliers();
+        logger.info("ServiceFactory (con Facade integrado) inicializado.");
     }
 
-    public ResumenPortafolioService getResumenPortafolioService() {
-        return resumenPortafolioService;
-    }
+    // ========== MÉTODOS PÚBLICOS DEL FACADE (Punto de entrada para la UI) ==========
 
-    public SaldoService getSaldoService() {
-        return saldoService;
-    }
-
-    public KardexService getKardexService() {
-        return kardexService;
-    }
-
-    public ResultadoInstrumentoService getResultadoInstrumentoService() {
-        return resultadoInstrumentoService;
-    }
-
-    public SaldoActualService getSaldoActualService() {
-        return saldoActualService;
-    }
-
-    public TipoMovimientosService getTipoMovimientosService() {
-        return tipoMovimientosService;
-    }
-
-    public ProcesoCosteoInicial getProcesoCosteoInicial() {
-        return procesoCosteoInicial;
-    }
-
-    public ProcesoCargaDiaria getCargaDiaria() {
-        return cargaDiariaService;
-    }
-
-    public ProcesoCargaInicial getCargaInicialSaldos() {
-        return cargaInicialSaldos;
-    }
-
-    public CustodioService getCustodioService() {
-        return custodioService;
-    }
-
-    public EmpresaService getEmpresaService() {
-        return empresaService;
-    }
-
-    public InstrumentoService getInstrumentoService() {
-        return instrumentoService;
-    }
-
-    public OperacionesTrxsService getOperacionesTrxsService() {
-        return operacionesTrxsService;
-    }
-
-    public PerfilService getPerfilService() {
-        return perfilService;
-    }
-
-    public ProblemasTrxsService getProblemasTrxsService() {
-        return problemasTrxsService;
-    }
-
-    public SaldoMensualService getSaldoMensualService() {
-        return saldoMensualService;
-    }
-
-    public TransaccionService getTransaccionService() {
-        return transaccionService;
-    }
-
-    public UsuarioService getUsuarioService() {
-        return usuarioService;
-    }
-
-    public CostService getCostService() {
-        return costeoService;
-    }
-
-    public FusionInstrumentoService getFusionService() {
-        return fusionService;
-    }
-
-    public NormalizarService getNormalizarService() {
-        return normalizarService;
-    }
-
-    public AuthenticationService getAuthentication() {
-        return authService;
-    }
-
-    public KardexRepository getKardexRepService() {
-        return kardexRepService;
-    }
-
-    public ResumenSaldoEmpresaService getResumenSaldosService() {
-        return resumenSaldosService;
-    }
-
-    public ConfrontaService getConfrontaService() {
-        return confrontaService;
-    }
-
-    public void setNavigatorService(NavigatorService navigatorService) {
-        this.navigatorService = navigatorService;
-    }
-
-    public void setResourceBundle(ResourceBundle resourceBundle) {
-        this.resourceBundle = resourceBundle;
-    }
-
-    public FiltroService getFiltroService() {
-        return getService(FiltroService.class, FiltroService::new);
-    }
-
-    // --- MÉTODO QUE ACTÚA COMO CONTROLLER FACTORY ---
-    public Object getController(Class<?> type) {
-        if (type == AppController.class) {
-            return new AppController(this, navigatorService, resourceBundle);
-        }
-        if (type == LoginController.class) {
-            return new LoginController(getAuthentication());
-        }
-        if (type == CrearAdminController.class) {
-            return new CrearAdminController(getUsuarioService());
-        }
-        if (type == KardexController.class) {
-            return new KardexController((KardexRepositoryImpl) getKardexRepService(), this, resourceBundle);
-        }
-        if (type == SaldosController.class) {
-            return new SaldosController(getSaldoActualService(), this, resourceBundle);
-        }
-        if (type == ResumenSaldosController.class) {
-            return new ResumenSaldosController(getResumenSaldosService());
-        }
-        if (type == ConfrontaSaldosController.class) {
-            return new ConfrontaSaldosController();
-        }
-        if (type == ResultadoInstrumentoController.class) {
-            return new ResultadoInstrumentoController(
-                    getResultadoInstrumentoService(),
-                    this,
-                    resourceBundle
-            );
-        }
-        if (type == ResumenPortafolioController.class) {
-            return new ResumenPortafolioController(
-                    getResumenPortafolioService(),
-                    this,
-                    resourceBundle
-            );
-        }
-        if (type == OperacionesTrxsController.class) {
-            return new OperacionesTrxsController(
-                    getOperacionesTrxsService(),
-                    this,
-                    getFiltroService(),
-                    this::getController,
-                    resourceBundle
-            );
-        }
-        if (type == SaldoMensualController.class) {
-            return new SaldoMensualController(getSaldoMensualService(), getEmpresaService(), getCustodioService());
-        }
-        if (type == ProblemasTrxsController.class) {
-            return new ProblemasTrxsController(getProblemasTrxsService(), getEmpresaService(), getCustodioService());
-        }
-        if (type == TipoMovimientosController.class) {
-            return new TipoMovimientosController(getTipoMovimientosService());
-        }
-        if (type == ResumenHistoricoController.class) {
-            return new ResumenHistoricoController(getResumenHistoricoService(), this, resourceBundle);
-        }
-        if (type == TransaccionManualController.class) {
-            return new TransaccionManualController(
-                    getTransaccionService(),
-                    getTipoMovimientosService(),
-                    getInstrumentoService(),
-                    getEmpresaService(),
-                    getCustodioService()
-            );
-        }
+    public boolean autenticarUsuario(String usuario, String password) {
         try {
-            return type.getDeclaredConstructor().newInstance();
+            return authenticationService.autenticar(usuario, password);
         } catch (Exception e) {
-            throw new RuntimeException("No se pudo crear el controlador: " + type.getName(), e);
+            logger.error("Error en autenticación", e);
+            return false;
         }
     }
 
-    private <T> T getService(Class<T> serviceClass, Supplier<T> factory) {
-        return (T) serviceCache.computeIfAbsent(serviceClass, k -> factory.get());
+    public boolean hayUsuariosRegistrados() {
+        return usuarioService.hayUsuariosRegistrados();
     }
+
+    public List<EmpresaEntity> obtenerEmpresasConTransacciones() {
+        return filtroService.obtenerEmpresasConTransacciones();
+    }
+    
+    public List<CustodioEntity> obtenerCustodiosConTransacciones(Long empresaId) {
+        return filtroService.obtenerCustodiosConTransacciones(empresaId);
+    }
+
+    public List<String> obtenerCuentasConTransacciones(Long empresaId, Long custodioId) {
+        return filtroService.obtenerCuentasConTransacciones(empresaId, custodioId);
+    }
+
+    public List<InstrumentoEntity> obtenerInstrumentosConTransacciones(Long empresaId, Long custodioId, String cuenta) {
+        return filtroService.obtenerInstrumentosConTransacciones(empresaId, custodioId, cuenta);
+    }
+
+    public ResultadoCargaDto ejecutarCargaInicial(ListaEnumsCustodios custodio, File archivo) {
+        return procesoCargaInicial.ejecutar(custodio, archivo);
+    }
+
+    public ResultadoCargaDto ejecutarCargaDiaria(ListaEnumsCustodios custodio, File archivo) {
+        return procesoCargaDiaria.ejecutar(custodio, archivo);
+    }
+    
+    // ... Aquí puedes seguir añadiendo todos los otros métodos públicos que estaban en PortafolioFacade ...
+    // Por ejemplo:
+    // public List<ResumenHistoricoDto> obtenerResumenHistorico(...) { return resumenHistoricoService.generarReporte(...); }
+    // public void fusionarInstrumentos(...) { fusionInstrumentoService.fusionarYPrepararRecosteo(...); }
+
+
+    // ========== MÉTODOS DE CONFIGURACIÓN Y CREACIÓN DE CONTROLADORES ==========
+
+    public void setNavigatorService(NavigatorService navigatorService) { this.navigatorService = navigatorService; }
+    public void setResourceBundle(ResourceBundle resourceBundle) { this.resourceBundle = resourceBundle; }
+
+    private void initializeControllerSuppliers() {
+        // --- Aquí defines cómo se construye cada controlador ---
+        // Ahora, en lugar de pasar 'this' (el ServiceFactory), puedes pasar servicios específicos
+        // o mantener el 'this' si el controlador necesita acceso a múltiples métodos del facade.
+
+        controllerSuppliers.put(AppController.class, () -> new AppController(this, navigatorService, resourceBundle));
+        controllerSuppliers.put(LoginController.class, () -> new LoginController(authenticationService));
+        controllerSuppliers.put(CrearAdminController.class, () -> new CrearAdminController(usuarioService));
+        controllerSuppliers.put(SaldosController.class, () -> new SaldosController(saldoActualService, this, resourceBundle));
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getController(Class<T> controllerClass) {
+        try {
+            Supplier<?> supplier = controllerSuppliers.get(controllerClass);
+            if (supplier != null) {
+                return (T) supplier.get();
+            }
+            // Fallback para controladores sin dependencias
+            return controllerClass.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            logger.error("Error al crear controlador {}: {}", controllerClass.getSimpleName(), e.getMessage(), e);
+            throw new RuntimeException("No se pudo crear el controlador: " + controllerClass.getName(), e);
+        }
+    }
+    
+    // --- Getters para servicios (si algún controlador los necesita directamente) ---
+    public EmpresaService getEmpresaService() { return empresaService; }
+    public CustodioService getCustodioService() { return custodioService; }
+    public FiltroService getFiltroService() { return filtroService; }
+    public InstrumentoService getInstrumentoService() { return instrumentoService; }
+    public CostingApi getCosteoService() { return costeoService; }
+    public NormalizarService getNormalizarService() { return normalizarService; }
+    public PortafolioFacade getPortafolioFacade() { return facadeService; }
+    
 }

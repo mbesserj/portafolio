@@ -8,8 +8,8 @@ module com.app.portafolio.ui {
     // 1. Requiere el módulo de servicio para acceder a la lógica de negocio.
     // A través de este, obtiene acceso transitivo a los DTOs del modelo si es necesario.
     requires com.app.portafolio.service;
-    //requires com.app.portafolio.cost;
     requires com.app.portafolio.etl;
+    requires com.app.portafolio.costing;
 
     // --- DEPENDENCIAS DE JAVAFX ---
     requires javafx.controls;
@@ -27,7 +27,6 @@ module com.app.portafolio.ui {
     // para que pueda usar reflexión para instanciar controladores y lanzar la app.
     opens com.app.ui.App to javafx.graphics, javafx.fxml;
     opens com.app.ui.controller to javafx.fxml;
-    opens com.app.ui.service to javafx.fxml;
     opens com.app.ui.util to javafx.fxml;
     
 }

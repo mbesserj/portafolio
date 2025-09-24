@@ -2,7 +2,7 @@ package com.app.ui.App;
 
 import com.app.service.UsuarioService;
 import com.app.ui.controller.ServiceFactory;
-import com.app.ui.service.NavigatorService; 
+import com.app.ui.controller.NavigatorService; 
 import com.app.utiles.LibraryInitializer;
 import java.util.Locale;
 import java.util.ResourceBundle;

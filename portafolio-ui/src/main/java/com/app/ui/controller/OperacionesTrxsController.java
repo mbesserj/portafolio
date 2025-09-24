@@ -7,7 +7,6 @@ import com.app.entities.InstrumentoEntity;
 import com.app.entities.TransaccionEntity;
 import com.app.enums.TipoAjuste;
 import com.app.enums.TipoMovimientoEspecial;
-import com.app.service.CostService;
 import com.app.service.CustodioService;
 import com.app.service.EmpresaService;
 import com.app.service.FiltroService;
@@ -42,6 +41,7 @@ import java.util.function.Supplier;
 
 import static com.app.ui.util.FormatUtils.createComboBoxCellFactory;
 import static com.app.ui.util.FormatUtils.createNumericCellFactory;
+import com.costing.api.CostingApi;
 import java.util.ResourceBundle;
 import javafx.util.Callback;
 
@@ -55,7 +55,7 @@ public class OperacionesTrxsController implements MainPaneAware {
     private final FusionInstrumentoService instrumentoAdminService;
     private final InstrumentoService instrumentoService;
     private final TransaccionService transaccionService;
-    private final CostService costoService;
+    private final CostingApi costoService;
     private final FiltroService filtroService;
     private final ServiceFactory serviceFactory;
     private final Callback<Class<?>, Object> controllerFactory;
@@ -124,7 +124,7 @@ public class OperacionesTrxsController implements MainPaneAware {
         this.instrumentoService = serviceFactory.getInstrumentoService();
         this.instrumentoAdminService = serviceFactory.getFusionService();
         this.transaccionService = serviceFactory.getTransaccionService();
-        this.costoService = serviceFactory.getCostService();
+        this.costoService = serviceFactory.getCosteoService();
         this.filtroService = filtroService;
         this.controllerFactory = controllerFactory;
         this.resourceBundle = resourceBundle;
