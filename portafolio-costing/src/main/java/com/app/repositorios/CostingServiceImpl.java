@@ -1,7 +1,7 @@
 package com.app.repositorios;
 
-import com.app.interfaz.AbstractRepository;
-import com.app.interfaz.CostingApiInterfaz;
+import com.app.interfaces.AbstractRepository;
+import com.app.interfaces.CostingApiInterfaz;
 import com.app.dto.AjustePropuestoDto;
 import com.app.dto.CostingGroupDTO;
 import com.app.engine.FifoCostingEngine;
@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.app.interfaz.KardexApiInterfaz;
-import com.app.interfaz.SaldoApiInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
 
 /**
  * Implementación central de la lógica de negocio para el módulo de costeo.

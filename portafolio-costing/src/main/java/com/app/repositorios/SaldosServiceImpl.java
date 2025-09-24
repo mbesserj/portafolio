@@ -1,6 +1,6 @@
 package com.app.repositorios;
 
-import com.app.interfaz.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import com.app.dto.ResumenSaldoDto;
 import com.app.entities.CustodioEntity;
 import com.app.entities.EmpresaEntity;
@@ -8,12 +8,15 @@ import com.app.entities.InstrumentoEntity;
 import com.app.entities.SaldoEntity;
 import com.app.entities.SaldoKardexEntity;
 import com.app.entities.SaldosDiariosEntity;
+import com.app.entities.TipoMovimientoEntity;
+import com.app.entities.TransaccionEntity;
 import jakarta.persistence.NoResultException;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import com.app.interfaz.SaldoApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import java.math.BigDecimal;
 
 /**
  * Implementación del repositorio para acceder a los datos de Saldos Diarios.
@@ -108,7 +111,7 @@ public class SaldosServiceImpl extends AbstractRepository implements SaldoApiInt
                         .getResultList().stream().findFirst()
         );
     }
-    
+
     @Override
     public Optional<SaldoKardexEntity> findByGrupo(Long empresaId, Long custodioId, Long instrumentoId, String cuenta) {
         return execute(em -> {
@@ -120,5 +123,72 @@ public class SaldosServiceImpl extends AbstractRepository implements SaldoApiInt
                 return Optional.empty();
             }
         });
+    }
+
+    /**
+     * Crea el saldo de apertura la primera vez que se cargan datos.
+     */
+    @Override
+    public void crearSaldosDeAperturaDesdeTransacciones() {
+
+        executeInTransaction(em -> {
+            TipoMovimientoEntity tipoMovimientoSaldoInicial;
+            try {
+                tipoMovimientoSaldoInicial = em.createQuery(
+                        "SELECT tm FROM TipoMovimientoEntity tm WHERE tm.tipoMovimiento = 'SALDO INICIAL'",
+                        TipoMovimientoEntity.class
+                ).getSingleResult();
+            } catch (NoResultException e) {
+                throw new IllegalStateException("El tipo de movimiento 'SALDO INICIAL' debe existir para la carga inicial.");
+            }
+
+            List<TransaccionEntity> transaccionesDeApertura = em.createQuery(
+                    "SELECT t FROM TransaccionEntity t WHERE t.tipoMovimiento = :tipoMov",
+                    TransaccionEntity.class
+            ).setParameter("tipoMov", tipoMovimientoSaldoInicial).getResultList();
+
+            if (transaccionesDeApertura.isEmpty()) {
+                return; // Salimos de la transacción y del método.
+            }
+
+            for (TransaccionEntity tx : transaccionesDeApertura) {
+                SaldoEntity nuevoSaldo = mapearTransaccionASaldo(tx);
+                em.persist(nuevoSaldo);
+            }
+        });
+    }
+
+    /**
+     * Método privado que convierte una TransaccionEntity en una SaldoEntity.
+     * Esto limpia el método principal y centraliza la lógica de mapeo.
+     *
+     * @param tx La transacción de origen.
+     * @return La nueva entidad de saldo lista para ser persistida.
+     */
+    private SaldoEntity mapearTransaccionASaldo(TransaccionEntity tx) {
+        SaldoEntity nuevoSaldo = new SaldoEntity();
+
+        // --- CAMPOS DE RELACIÓN Y BÁSICOS ---
+        nuevoSaldo.setEmpresa(tx.getEmpresa());
+        nuevoSaldo.setCustodio(tx.getCustodio());
+        nuevoSaldo.setInstrumento(tx.getInstrumento());
+        nuevoSaldo.setCuenta(tx.getCuenta());
+        nuevoSaldo.setFecha(tx.getFecha());
+
+        // --- CAMPOS DE CANTIDADES Y VALORES ---
+        nuevoSaldo.setCantidad(tx.getCantidad());
+        nuevoSaldo.setCantGarantia(BigDecimal.ZERO);
+        nuevoSaldo.setCantLibre(BigDecimal.ZERO);
+        nuevoSaldo.setCantPlazo(BigDecimal.ZERO);
+        nuevoSaldo.setCantVc(BigDecimal.ZERO);
+        nuevoSaldo.setPrecio(tx.getPrecio());
+        nuevoSaldo.setMontoClp(tx.getMontoClp());
+        nuevoSaldo.setMontoUsd(BigDecimal.ZERO);
+        nuevoSaldo.setMoneda(tx.getMoneda());
+
+        nuevoSaldo.setCreadoPor("CARGA_INICIAL");
+        nuevoSaldo.setFechaCreacion(LocalDate.now());
+
+        return nuevoSaldo;
     }
 }

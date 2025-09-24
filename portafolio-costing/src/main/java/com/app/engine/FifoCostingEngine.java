@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import com.app.interfaz.KardexApiInterfaz;
-import com.app.interfaz.SaldoApiInterfaz;
-import com.app.interfaz.TipoMovimientoInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import com.app.interfaces.TipoMovimientoInterfaz;
 
 public class FifoCostingEngine {
 

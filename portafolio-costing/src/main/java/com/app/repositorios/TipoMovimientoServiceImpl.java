@@ -1,6 +1,6 @@
 package com.app.repositorios;
 
-import com.app.interfaz.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import com.app.dto.TipoMovimientoEstado;
 import com.app.entities.MovimientoContableEntity;
 import com.app.entities.TipoMovimientoEntity;
@@ -11,7 +11,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
 import java.util.List;
 import java.util.Optional;
-import com.app.interfaz.TipoMovimientoInterfaz;
+import com.app.interfaces.TipoMovimientoInterfaz;
 
 public class TipoMovimientoServiceImpl extends AbstractRepository implements TipoMovimientoInterfaz {
 

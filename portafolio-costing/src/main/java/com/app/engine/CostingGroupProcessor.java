@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import com.app.interfaz.KardexApiInterfaz;
-import com.app.interfaz.SaldoApiInterfaz;
-import com.app.interfaz.TipoMovimientoInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import com.app.interfaces.TipoMovimientoInterfaz;
 
 // Esta clase maneja el estado y el flujo de un solo grupo
 public class CostingGroupProcessor {

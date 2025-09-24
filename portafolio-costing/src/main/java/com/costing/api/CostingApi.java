@@ -1,15 +1,15 @@
 package com.costing.api;
 
-import com.app.interfaz.CostingApiInterfaz; 
+import com.app.interfaces.CostingApiInterfaz; 
 import com.app.repositorios.AjustesProcess;
 import com.app.repositorios.CostingServiceImpl;
 import com.app.repositorios.KardexServiceImpl;
 import com.app.repositorios.ResetCosteoServiceImpl;
 import com.app.repositorios.SaldosServiceImpl;
 import com.app.repositorios.TipoMovimientoServiceImpl;
-import com.app.interfaz.KardexApiInterfaz;
-import com.app.interfaz.SaldoApiInterfaz;
-import com.app.interfaz.TipoMovimientoInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import com.app.interfaces.TipoMovimientoInterfaz;
 
 /**
  * Fachada pública y único punto de acceso al módulo de costeo.

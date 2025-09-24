@@ -7,16 +7,16 @@ import com.app.entities.TipoMovimientoEntity;
 import com.app.entities.TransaccionEntity;
 import com.app.enums.TipoAjuste;
 import com.app.enums.TipoMovimientoEspecial;
-import com.app.interfaz.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
-import com.app.interfaz.KardexApiInterfaz;
-import com.app.interfaz.SaldoApiInterfaz;
-import com.app.interfaz.TipoMovimientoInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import com.app.interfaces.TipoMovimientoInterfaz;
 
 /**
  * Clase de proceso que encapsula la lógica de negocio para la gestión de ajustes.

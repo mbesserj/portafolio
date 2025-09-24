@@ -1,9 +1,9 @@
 package com.app.repositorios;
 
-import com.app.interfaz.AbstractRepository;
-import com.app.repository.TransaccionRepository;
+import com.app.interfaces.AbstractRepository;
+import com.app.interfaces.ResetCosteoFlagInterface;
 
-public class ResetCosteoServiceImpl extends AbstractRepository implements TransaccionRepository {
+public class ResetCosteoServiceImpl extends AbstractRepository implements ResetCosteoFlagInterface {
 
     /**
      * Resetea los datos para que se puedan recostear.
