@@ -2,7 +2,8 @@ package com.app.service;
 
 import com.app.dto.InventarioCostoDto;
 import com.app.dto.ResumenSaldoDto;
-import com.app.repository.PrecioRepository;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.PrecioRepInterfaz;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.app.repository.KardexRepository;
 
 /**
  * Servicio de negocio para operaciones relacionadas con Saldos.
@@ -21,15 +21,15 @@ public class SaldoActualService {
     private static final Logger logger = LoggerFactory.getLogger(SaldoActualService.class);
 
     // Dependencias inyectadas: El servicio depende de los contratos (interfaces), no de las implementaciones.
-    private final KardexRepository kardexRepository;
-    private final PrecioRepository precioRepository;
+    private final KardexApiInterfaz kardexRepository;
+    private final PrecioRepInterfaz precioRepository;
 
     /**
      * Constructor para inyectar las dependencias de los repositorios.
      * @param kardexRepository Repositorio para consultas de kárdex.
      * @param precioRepository Repositorio para consultas de precios.
      */
-    public SaldoActualService(KardexRepository kardexRepository, PrecioRepository precioRepository) {
+    public SaldoActualService(KardexApiInterfaz kardexRepository, PrecioRepInterfaz precioRepository) {
         this.kardexRepository = kardexRepository;
         this.precioRepository = precioRepository;
     }

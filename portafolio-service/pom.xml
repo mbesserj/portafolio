@@ -34,16 +34,15 @@
             <version>${project.version}</version>
         </dependency>
         
-        
         <!-- Dependencias para Spring Security -->
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>6.5.3</version> <!-- O la versión que estés usando -->
+            <version>6.5.4</version> 
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId> <!-- O la versión que estés usando -->
+            <artifactId>spring-security-crypto</artifactId> 
         </dependency>
         
         <!-- API de Logging -->

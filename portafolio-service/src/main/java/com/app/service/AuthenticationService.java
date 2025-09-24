@@ -1,37 +1,57 @@
 package com.app.service;
 
 import com.app.entities.UsuarioEntity;
-import com.app.utiles.LibraryInitializer;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
- * Fachada para gestionar las operaciones de autenticación. Este es el único
- * punto de entrada para la validación de usuarios desde cualquier aplicación
- * cliente (como portafolio-ui).
+ * Fachada para gestionar las operaciones de autenticación.
  */
-public class AuthenticationService {
+public class AuthenticationService extends AbstractRepository {
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private static final String QUERY_USUARIO_BY_USERNAME = 
+        "SELECT u FROM UsuarioEntity u WHERE u.usuario = :user";
 
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public AuthenticationService() {
+        this.passwordEncoder = new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Autentica un usuario validando sus credenciales.
+     * 
+     * @param usuario El nombre de usuario
+     * @param password La contraseña en texto plano
+     * @return true si las credenciales son válidas, false en caso contrario
+     * @throws IllegalArgumentException si usuario o password son nulos o vacíos
+     */
     public boolean autenticar(String usuario, String password) {
-        EntityManager em = LibraryInitializer.getEntityManager();
-        try {
-            TypedQuery<UsuarioEntity> query = em.createQuery(
-                    "SELECT u FROM UsuarioEntity u WHERE u.usuario = :user", UsuarioEntity.class);
-            query.setParameter("user", usuario);
-            UsuarioEntity user = query.getSingleResult();
-
-            return passwordEncoder.matches(password, user.getPassword());
-
-        } catch (NoResultException e) {
-            return false; 
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
-            }
+        if (usuario == null || usuario.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario no puede ser nulo o vacío");
         }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña no puede ser nula o vacía");
+        }
+
+        return executeReadOnly(em -> {
+            try {
+                TypedQuery<UsuarioEntity> query = em.createQuery(QUERY_USUARIO_BY_USERNAME, UsuarioEntity.class);
+                query.setParameter("user", usuario.trim());
+                UsuarioEntity user = query.getSingleResult();
+                
+                boolean matches = passwordEncoder.matches(password, user.getPassword());
+                logger.debug("Intento de autenticación para usuario: {} - Resultado: {}", usuario, matches);
+                return matches;
+                
+            } catch (NoResultException e) {
+                logger.debug("Usuario no encontrado: {}", usuario);
+                return false;
+            } catch (Exception e) {
+                logger.error("Error durante la autenticación del usuario: {}", usuario, e);
+                return false;
+            }
+        });
     }
 }

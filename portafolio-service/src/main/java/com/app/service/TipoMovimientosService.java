@@ -6,7 +6,7 @@ import com.app.dto.TipoMovimientoEstado;
 import com.app.entities.MovimientoContableEntity;
 import com.app.entities.TipoMovimientoEntity;
 import com.app.enums.TipoEnumsCosteo;
-import com.app.repository.TipoMovimientoRepository;
+import com.app.interfaces.TipoMovimientoInterfaz;
 import com.app.utiles.LibraryInitializer;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -18,14 +18,14 @@ import java.util.Optional;
  */
 public class TipoMovimientosService {
 
-    private final TipoMovimientoRepository tipoMovimientoRepository;
+    private final TipoMovimientoInterfaz tipoMovimientoRepository;
 
     /**
      * Constructor para la inyección de dependencias.
      * Recibe el repositorio que necesita para realizar sus consultas.
      * @param tipoMovimientoRepository El repositorio para acceder a los datos de TipoMovimiento.
      */
-    public TipoMovimientosService(TipoMovimientoRepository tipoMovimientoRepository) {
+    public TipoMovimientosService(TipoMovimientoInterfaz tipoMovimientoRepository) {
         this.tipoMovimientoRepository = tipoMovimientoRepository;
     }
 
@@ -66,7 +66,6 @@ public class TipoMovimientosService {
     }
     
     // --- Métodos de consulta que ahora DELEGAN al repositorio ---
-    // Estos son "Queries", simplemente piden datos.
 
     public Optional<TipoMovimientoEntity> buscarPorNombre(String tipoMovimiento) {
         return tipoMovimientoRepository.buscarPorNombre(tipoMovimiento);

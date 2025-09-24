@@ -3,8 +3,9 @@ package com.app.service;
 import com.app.dto.InventarioCostoDto;
 import com.app.dto.ResumenInstrumentoDto;
 import com.app.entities.SaldoEntity;
-import com.app.repositorio.TransaccionRepository;
-import com.costing.api.KardexApi;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
+import com.app.repositorio.AggregatesForInstrument;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -14,12 +15,14 @@ import java.util.Optional;
 
 public class ResumenPortafolioService {
 
-    private final KardexApi kardexService;
-    private final TransaccionRepository transaccionRepository;
+    private final SaldoApiInterfaz saldoService;
+    private final KardexApiInterfaz kardexService;
+    private final AggregatesForInstrument aggregatesOpt;
 
-    public ResumenPortafolioService(KardexApi kardexService, TransaccionRepository transaccionRepository) {
+    public ResumenPortafolioService(SaldoApiInterfaz saldoService, KardexApiInterfaz kardexService, AggregatesForInstrument aggregatesOpt) {
+        this.saldoService = saldoService;
         this.kardexService = kardexService;
-        this.transaccionRepository = transaccionRepository;
+        this.aggregatesOpt = aggregatesOpt;
     }
 
     public List<ResumenInstrumentoDto> generarResumen(Long empresaId, Long custodioId, String cuenta) {
@@ -39,7 +42,7 @@ public class ResumenPortafolioService {
             dto.setSaldoDisponible(item.getSaldoCantidadFinal());
             dto.setCostoFifo(item.getCostoTotalFifo());
 
-            Optional<SaldoEntity> ultimoSaldoOpt = kardexService.obtenerUltimoSaldo(empresaId, custodioId, cuenta, item.getInstrumentoId());
+            Optional<SaldoEntity> ultimoSaldoOpt = this.saldoService.obtenerUltimoSaldo(empresaId, custodioId, cuenta, item.getInstrumentoId());
             if (ultimoSaldoOpt.isPresent()) {
                 BigDecimal precioMercado = ultimoSaldoOpt.get().getPrecio();
                 BigDecimal valorMercado = precioMercado.multiply(item.getSaldoCantidadFinal());
@@ -47,14 +50,17 @@ public class ResumenPortafolioService {
                 dto.setUtilidadNoRealizada(valorMercado.subtract(item.getCostoTotalFifo()));
             }
 
-            Optional<Object[]> aggregatesOpt = transaccionRepository.getAggregatesForInstrument(empresaId, custodioId, cuenta, item.getInstrumentoId());
+            Optional<Object[]> aggregatesOpt = this.aggregatesOpt.getAggregatesForInstrument(empresaId, custodioId, cuenta, item.getInstrumentoId());
             if (aggregatesOpt.isPresent()) {
                 Object[] aggregates = aggregatesOpt.get();
                 dto.setTotalDividendos((BigDecimal) aggregates[0]);
                 dto.setTotalGastos((BigDecimal) aggregates[1]);
             }
 
-            BigDecimal utilidadRealizada = kardexService.calcularUtilidadRealizadaParaInstrumento(empresaId, custodioId, cuenta, item.getInstrumentoId());
+            /**
+             * Por implementar método calcularUtilidadRealizadaParaInstrumento.
+             */
+            BigDecimal utilidadRealizada = calcularUtilidadRealizadaParaInstrumento(empresaId, custodioId, cuenta, item.getInstrumentoId());
             dto.setUtilidadRealizada(utilidadRealizada);
             
             // --- CÁLCULO DE RENTABILIDAD CORREGIDO (POR INSTRUMENTO) ---
@@ -102,5 +108,9 @@ public class ResumenPortafolioService {
             resumenCompleto.add(totales);
         }
         return resumenCompleto;
+    }
+    
+    private BigDecimal calcularUtilidadRealizadaParaInstrumento(Long empresaId, Long custodioId, String cuenta, Long instrumentoId) {
+        return BigDecimal.ZERO;
     }
 }

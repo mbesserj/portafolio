@@ -2,62 +2,64 @@ package com.app.service;
 
 import com.app.dao.PerfilDao;
 import com.app.entities.PerfilEntity;
-import com.app.utiles.LibraryInitializer;
-import jakarta.persistence.EntityManager;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Servicio para gestionar la lógica de negocio de los perfiles.
  */
-public class PerfilService {
+public class PerfilService extends AbstractRepository {
 
     /**
-     * Busca un perfil por su nombre. Si no lo encuentra, lo crea dentro de la
-     * misma transacción. Esto asegura que el perfil siempre exista cuando se
-     * necesite.
-     *
-     * @param nombre El nombre del perfil a buscar o crear (ej:
-     * "ADMINISTRADOR").
-     * @return La entidad PerfilEntity encontrada o recién creada.
+     * Busca un perfil por nombre o lo crea si no existe.
+     * 
+     * @param nombre El nombre del perfil
+     * @return El perfil encontrado o creado
+     * @throws IllegalArgumentException si el nombre es nulo o vacío
      */
     public PerfilEntity buscarOCrearPorNombre(String nombre) {
-        EntityManager em = LibraryInitializer.getEntityManager();
-        PerfilDao perfilDao = new PerfilDao(em);
-        PerfilEntity perfil;
-
-        try {
-            em.getTransaction().begin();
-
-            perfil = perfilDao.findByName(nombre);
-            if (perfil == null) {
-                System.out.println("Perfil '" + nombre + "' no encontrado. Creándolo...");
-                perfil = new PerfilEntity(nombre);
-                perfilDao.create(perfil);
-            }
-            em.getTransaction().commit();
-
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException("Error al buscar o crear el perfil: " + nombre, e);
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
-            }
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del perfil no puede ser nulo o vacío");
         }
-        return perfil;
+
+        return executeInTransaction(em -> {
+            try {
+                PerfilDao perfilDao = new PerfilDao(em);
+                PerfilEntity perfil = perfilDao.findByName(nombre.trim());
+                
+                if (perfil == null) {
+                    logger.info("Perfil '{}' no encontrado. Creándolo...", nombre);
+                    perfil = new PerfilEntity(nombre.trim());
+                    perfilDao.create(perfil);
+                    logger.info("Perfil '{}' creado exitosamente con ID: {}", nombre, perfil.getId());
+                } else {
+                    logger.debug("Perfil '{}' encontrado con ID: {}", nombre, perfil.getId());
+                }
+                return perfil;
+                
+            } catch (Exception e) {
+                logger.error("Error al buscar o crear perfil '{}'", nombre, e);
+                throw new RuntimeException("Error al procesar perfil: " + e.getMessage(), e);
+            }
+        });
     }
 
+    /**
+     * Obtiene todos los perfiles del sistema.
+     * 
+     * @return Lista de perfiles o lista vacía si hay error
+     */
     public List<PerfilEntity> obtenerTodos() {
-        EntityManager em = LibraryInitializer.getEntityManager();
-        try {
-            PerfilDao perfilDao = new PerfilDao(em);
-            return perfilDao.findAll(); // Usa el método heredado de AbstractJpaDao
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
+        return executeReadOnly(em -> {
+            try {
+                PerfilDao perfilDao = new PerfilDao(em);
+                List<PerfilEntity> perfiles = perfilDao.findAll();
+                logger.debug("Se obtuvieron {} perfiles", perfiles.size());
+                return perfiles;
+            } catch (Exception e) {
+                logger.error("Error al obtener todos los perfiles", e);
+                return Collections.emptyList();
             }
-        }
+        });
     }
 }

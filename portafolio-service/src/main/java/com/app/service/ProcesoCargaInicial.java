@@ -2,29 +2,35 @@ package com.app.service;
 
 import com.app.dto.ResultadoCargaDto;
 import com.app.enums.ListaEnumsCustodios;
+import com.app.exception.CostingException;
+import com.app.interfaces.CostingApiInterfaz;
+import com.app.interfaces.KardexApiInterfaz;
+import com.app.interfaces.SaldoApiInterfaz;
 import com.app.normalizar.NormalizarDataService;
-import com.app.repository.SincronizacionRepository;
 import com.app.utiles.LibraryInitializer;
-import com.app.repositorio.SincronizacionRepositoryImpl;
 import com.costing.api.CostingApi;
+import com.costing.api.KardexApi;
+import com.costing.api.SaldoApi;
 import com.etl.service.LectorCartolasService;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityTransaction;
 import java.io.File;
 import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Servicio ORQUESTADOR del proceso de Carga Inicial COMPLETA.
  * Gestiona transacciones separadas para cada fase para mayor robustez.
  */
-public class ProcesoCargaInicial {
+public class ProcesoCargaInicial extends AbstractRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcesoCargaInicial.class);
 
+    private final CostingApiInterfaz costingService = CostingApi.createService();
+    private final SaldoApiInterfaz saldoService = SaldoApi.createService();
+    private final KardexApiInterfaz kardexService = KardexApi.createService();
+
     public ProcesoCargaInicial() {
-        // Constructor
+        super();
     }
 
     public ResultadoCargaDto ejecutar(ListaEnumsCustodios custodio, File file) {
@@ -34,7 +40,9 @@ public class ProcesoCargaInicial {
         try {
             logger.info("--- INICIANDO PROCESO DE CARGA INICIAL COMPLETA ---");
             logger.info("FASE 1/5: Limpiando todas las tablas de datos...");
-            ejecutarEnTransaccion(em -> new LimpiezaService(em).limpiarDatosDeNegocio());
+            executeInTransaction(em -> {
+                new LimpiezaService().limpiarDatosDeNegocio();
+            });
         } catch (Exception e) {
             logger.error("Error crítico en la FASE 1 (Limpieza). El proceso se ha detenido.", e);
             return new ResultadoCargaDto(0, 0, Duration.ZERO, "El proceso falló en la fase de limpieza: " + e.getMessage());
@@ -44,23 +52,24 @@ public class ProcesoCargaInicial {
         // --- FASE 2: Carga y Normalización ---
         try {
             logger.info("FASE 2/5: Cargando y Normalizando datos desde el archivo: {}", file.getName());
-            ResultadoCargaDto resultadoCarga = ejecutarEnTransaccionYRetornar(em -> {
+            
+            /**
+             * pasa true para una carga inicial.
+             */
+            ResultadoCargaDto resultadoCarga = executeInTransactionAndReturn(em -> {
                 ResultadoCargaDto resCarga = new LectorCartolasService(em).cargar(custodio, file);
-                
-                // Se le pasa 'true' para indicar que es una Carga Inicial.
-                new NormalizarDataService(em, true).procesar();                
+                new NormalizarDataService(em, true).procesar();
                 return resCarga;
             });
             registrosLeidos = resultadoCarga.getRegistrosProcesados();
-            
-            // Verificación crucial
+
             long conteoTransacciones = contarTransacciones();
             if (conteoTransacciones == 0 && registrosLeidos > 0) {
                 throw new IllegalStateException("La normalización no generó ninguna transacción, aunque se leyeron " + registrosLeidos + " registros. Revisa la lógica de NormalizarDataService.");
             }
             logger.info("Se crearon {} transacciones a partir de {} registros leídos.", conteoTransacciones, registrosLeidos);
 
-        } catch (Exception e) {
+        } catch (IllegalStateException e) {
             logger.error("Error crítico en la FASE 2 (Carga y Normalización). El proceso se ha detenido.", e);
             return new ResultadoCargaDto(0, 0, Duration.ZERO, "El proceso falló en la fase de normalización: " + e.getMessage());
         }
@@ -68,22 +77,21 @@ public class ProcesoCargaInicial {
         // --- FASE 3: Creación de Saldos de Apertura ---
         try {
             logger.info("FASE 3/5: Creando saldos de apertura...");
-            ejecutarEnTransaccion(em -> {
-                 new SaldoAperturaService(em).crearSaldosDeAperturaDesdeTransacciones();
+            executeInTransaction(em -> {
+                saldoService.crearSaldosDeAperturaDesdeTransacciones();
             });
         } catch (Exception e) {
             logger.error("Error crítico en la FASE 3 (Creación de Saldos). El proceso se ha detenido.", e);
             return new ResultadoCargaDto(registrosLeidos, 0, Duration.ZERO, "El proceso falló al crear saldos de apertura: " + e.getMessage());
         }
-        
+
         // --- FASE 4: Sincronización de Saldos Kardex ---
         try {
             logger.info("FASE 4/5: Sincronizando saldos de Kardex desde la carga inicial...");
-            ejecutarEnTransaccion(em -> {
-                SincronizacionRepository sincronizador = new SincronizacionRepositoryImpl();
-                sincronizador.sincronizarSaldosKardexDesdeSaldos(em);
+            executeInTransaction(em -> {
+                kardexService.sincronizarSaldosKardexDesdeSaldos();
             });
-        
+
         } catch (Exception e) {
             logger.error("Error crítico en la FASE 4 (Sincronización). El proceso se ha detenido.", e);
             return new ResultadoCargaDto(registrosLeidos, 0, Duration.ZERO, "El proceso falló en la sincronización final: " + e.getMessage());
@@ -92,9 +100,8 @@ public class ProcesoCargaInicial {
         // --- FASE 5: Costeo de Datos ---
         try {
             logger.info("FASE 5/5: Costeando datos de la carga inicial...");
-            // Esta operación es transaccional por sí misma dentro del servicio.
-            new CostingApi().iniciarCosteoCompleto();
-        } catch (Exception e) {
+            costingService.ejecutarCosteoCompleto();
+        } catch (CostingException e) {
             logger.error("Error crítico en la FASE 5 (Costeo). El proceso se ha detenido.", e);
             return new ResultadoCargaDto(registrosLeidos, 0, Duration.ZERO, "El proceso falló en el costeo final: " + e.getMessage());
         }
@@ -104,50 +111,11 @@ public class ProcesoCargaInicial {
         logger.info("--- ¡PROCESO DE CARGA INICIAL FINALIZADO CON ÉXITO! ---");
         return new ResultadoCargaDto(registrosLeidos, 0, duracion, "Carga inicial completada. Se procesaron " + registrosLeidos + " registros.");
     }
-    
-    // --- Métodos de ayuda para la gestión de transacciones ---
-    private void ejecutarEnTransaccion(java.util.function.Consumer<EntityManager> action) {
-        EntityManager em = null;
-        EntityTransaction tx = null;
-        try {
-            em = LibraryInitializer.getEntityManager();
-            tx = em.getTransaction();
-            tx.begin();
-            action.accept(em);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null && tx.isActive()) tx.rollback();
-            throw e; // Relanzar para que el método principal lo capture
-        } finally {
-            if (em != null && em.isOpen()) em.close();
-        }
-    }
-    
-    private <R> R ejecutarEnTransaccionYRetornar(java.util.function.Function<EntityManager, R> func) {
-        EntityManager em = null;
-        EntityTransaction tx = null;
-        try {
-            em = LibraryInitializer.getEntityManager();
-            tx = em.getTransaction();
-            tx.begin();
-            R result = func.apply(em);
-            tx.commit();
-            return result;
-        } catch (Exception e) {
-            if (tx != null && tx.isActive()) tx.rollback();
-            throw e;
-        } finally {
-            if (em != null && em.isOpen()) em.close();
-        }
-    }
-    
+
     private long contarTransacciones() {
-        EntityManager em = LibraryInitializer.getEntityManager();
-        try {
-            return (long) em.createQuery("SELECT count(t.id) FROM TransaccionEntity t").getSingleResult();
-        } finally {
-            if (em != null && em.isOpen()) em.close();
-        }
+        return executeReadOnly(em
+                -> em.createQuery("SELECT count(t.id) FROM TransaccionEntity t", Long.class)
+                        .getSingleResult()
+        );
     }
 }
-

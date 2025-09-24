@@ -1,0 +1,4 @@
+--patch-module
+com.app.portafolio.service=_
+--add-reads
+com.app.portafolio.service=ALL-UNNAMED

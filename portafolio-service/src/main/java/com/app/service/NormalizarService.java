@@ -2,66 +2,45 @@ package com.app.service;
 
 import com.app.dto.ResultadoCargaDto;
 import com.app.normalizar.NormalizarDataService;
-import com.app.utiles.LibraryInitializer;
-import jakarta.persistence.EntityManager;
 import java.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- * Orquesta el proceso completo de carga y normalización diaria. Gestiona una
- * única transacción atómica para todo el flujo.
+ * Orquesta el proceso completo de normalización diaria.
  */
-public class NormalizarService {
+public class NormalizarService extends AbstractRepository {
 
-    private static final Logger logger = LoggerFactory.getLogger(NormalizarService.class);
-    private EntityManager em;
-    
-    public NormalizarService() {
-        this.em = em;
-    }
-
+    /**
+     * Ejecuta el proceso de normalización dentro de una transacción única.
+     * 
+     * @return Resultado del proceso con información de duración y estado
+     * @throws RuntimeException si falla el proceso de normalización
+     */
     public ResultadoCargaDto ejecutar() {
-        em = LibraryInitializer.getEntityManager();
-        
         long startTime = System.nanoTime();
-        int archivos = 0;
-        int trxs = 0;
-        int errores = 0;
+        
+        return executeInTransaction(em -> {
+            logger.info("--- INICIANDO PROCESO DE NORMALIZACIÓN (Transacción Única) ---");
 
-        try {
-            em.getTransaction().begin();
-            logger.info("--- INICIANDO PROCESO DE CARGA DIARIA (Transacción Única) ---");
+            try {
+                // FASE 1: Limpiar la caché de persistencia
+                em.clear();
+                logger.info("Caché de persistencia limpiado para un inicio limpio");
 
-            // FASE 1 (Técnica): Limpiar la caché de persistencia
-            em.clear();
-            logger.info("Caché de persistencia limpiado para un inicio limpio.");
+                // FASE 2: NORMALIZAR DATOS
+                logger.info("Normalizando datos y creando relaciones maestras...");
+                new NormalizarDataService(em, false).procesar();
 
-            // FASE 2: NORMALIZAR DATOS
-            logger.info("FASE 1: Normalizando datos y creando relaciones maestras...");
-            
-            // Se le pasa 'false' para indicar que NO es una Carga Inicial.
-            new NormalizarDataService(em, false).procesar();
-    
-            em.getTransaction().commit();
-            logger.info("--- ¡PROCESO DE NORMALIZACION FINALIZADO CON ÉXITO! ---");
+                logger.info("--- ¡PROCESO DE NORMALIZACIÓN FINALIZADO CON ÉXITO! ---");
 
-            long endTime = System.nanoTime();
-            Duration duracion = Duration.ofNanos(endTime - startTime);
+                long endTime = System.nanoTime();
+                Duration duracion = Duration.ofNanos(endTime - startTime);
 
-            // Al final, en lugar de no devolver nada, creas y devuelves el resumen.
-            return new ResultadoCargaDto(trxs, errores, duracion, "Proceso completado.");
-
-        } catch (Exception e) {
-            logger.error("Error crítico durante el proceso de carga diaria. Se revertirán TODOS los cambios.", e);
-            if (em != null && em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+                return new ResultadoCargaDto(0, 0, duracion, "Proceso completado exitosamente");
+                
+            } catch (Exception e) {
+                logger.error("Error durante el proceso de normalización", e);
+                throw new RuntimeException("Falló el proceso de normalización: " + e.getMessage(), e);
             }
-            throw new RuntimeException("El proceso de carga diaria falló.", e);
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
-            }
-        }
+        });
     }
 }

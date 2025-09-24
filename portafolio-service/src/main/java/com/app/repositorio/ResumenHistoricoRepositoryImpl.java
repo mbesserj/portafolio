@@ -1,22 +1,17 @@
 package com.app.repositorio;
 
 import com.app.dto.ResumenHistoricoDto;
-import com.app.repository.ResumenHistoricoRepository;
-import com.app.repository.ResumenHistoricoRepository;
-import com.app.utiles.LibraryInitializer;
-import jakarta.persistence.EntityManager;
+import com.app.service.AbstractRepository;
 import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.app.interfaces.ResumenHistoricoInterfaz;
 
-public class ResumenHistoricoRepositoryImpl implements ResumenHistoricoRepository {
+public class ResumenHistoricoRepositoryImpl extends AbstractRepository implements ResumenHistoricoInterfaz {
 
-    @Override
-    public List<ResumenHistoricoDto> obtenerResumenHistorico(Long empresaId, Long custodioId, String cuenta) {
-        EntityManager em = null;        
-        String sql = """
+    private static final String RESUMEN_HISTORICO_QUERY = """
         WITH 
         saldos_activos_calculados AS (
             SELECT
@@ -104,35 +99,37 @@ public class ResumenHistoricoRepositoryImpl implements ResumenHistoricoRepositor
             nemo
         """;
 
-        try {
-            em = LibraryInitializer.getEntityManager();
-            Query query = em.createNativeQuery(sql);
-            query.setParameter("empresaId", empresaId);
-            query.setParameter("custodioId", custodioId);
-            query.setParameter("cuenta", cuenta);
+    @Override
+    public List<ResumenHistoricoDto> obtenerResumenHistorico(Long empresaId, Long custodioId, String cuenta) {
+        return executeReadOnly(em -> {
+            try {
+                Query query = em.createNativeQuery(RESUMEN_HISTORICO_QUERY);
+                query.setParameter("empresaId", empresaId);
+                query.setParameter("custodioId", custodioId);
+                query.setParameter("cuenta", cuenta);
 
-            List<Object[]> results = query.getResultList();
-
-            return results.stream()
-                    .map(row -> {
-                        ResumenHistoricoDto dto = new ResumenHistoricoDto();
-                        dto.setNemo((String) row[0]);
-                        dto.setNombreInstrumento((String) row[1]);
-                        dto.setTotalCostoFifo((BigDecimal) row[2]);
-                        dto.setTotalGasto((BigDecimal) row[3]);
-                        dto.setTotalDividendo((BigDecimal) row[4]);
-                        dto.setTotalUtilidad((BigDecimal) row[5]);
-                        dto.setTotalTotal((BigDecimal) row[6]);
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Collections.emptyList();
-        } finally {
-            if (em != null && em.isOpen()) {
-                em.close();
+                List<Object[]> results = query.getResultList();
+                return mapToResumenHistoricoDto(results);
+            } catch (Exception e) {
+                logger.error("Error al obtener resumen histórico", e);
+                return Collections.emptyList();
             }
-        }
+        });
+    }
+    
+    private List<ResumenHistoricoDto> mapToResumenHistoricoDto(List<Object[]> results) {
+        return results.stream()
+                .map(row -> {
+                    ResumenHistoricoDto dto = new ResumenHistoricoDto();
+                    dto.setNemo((String) row[0]);
+                    dto.setNombreInstrumento((String) row[1]);
+                    dto.setTotalCostoFifo((BigDecimal) row[2]);
+                    dto.setTotalGasto((BigDecimal) row[3]);
+                    dto.setTotalDividendo((BigDecimal) row[4]);
+                    dto.setTotalUtilidad((BigDecimal) row[5]);
+                    dto.setTotalTotal((BigDecimal) row[6]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
