@@ -1,10 +1,19 @@
 package com.app.service;
 
 import com.app.entities.InstrumentoEntity;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FusionInstrumentoService extends AbstractRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(FusionInstrumentoService.class);
+
+    public FusionInstrumentoService() {
+        super();
+    }
+    
     /**
      * Fusiona dos instrumentos y prepara todas las transacciones para recosteo.
      * 

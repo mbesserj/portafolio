@@ -1,12 +1,15 @@
 package com.app.service;
 
 import com.app.dto.ResumenSaldoEmpresaDto;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResumenSaldoEmpresaService extends AbstractRepository {
 
@@ -26,6 +29,12 @@ public class ResumenSaldoEmpresaService extends AbstractRepository {
         GROUP BY e.razonsocial, c.custodio, s.cuenta
         ORDER BY e.razonsocial, c.custodio
         """;
+
+    private static final Logger logger = LoggerFactory.getLogger(ResumenSaldoEmpresaService.class);
+    
+    public ResumenSaldoEmpresaService() {
+        super();
+    }
 
     /**
      * Orquesta la obtención y procesamiento del resumen de saldos. Este es el

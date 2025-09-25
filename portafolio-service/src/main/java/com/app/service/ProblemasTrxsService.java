@@ -2,11 +2,16 @@ package com.app.service;
 
 import com.app.dto.ProblemasTrxsDto;
 import com.app.enums.TipoEnumsCosteo;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.TypedQuery;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProblemasTrxsService extends AbstractRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProblemasTrxsService.class);
 
     private static final String PROBLEMAS_QUERY = """
         SELECT new com.app.dto.ProblemasTrxsDto(

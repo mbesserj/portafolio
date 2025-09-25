@@ -1,5 +1,6 @@
 package com.app.service;
 
+import com.app.interfaces.AbstractRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,9 @@ public class LimpiezaService extends AbstractRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(LimpiezaService.class);
 
+    /**
+     * Constructor.
+     */
     public LimpiezaService() {
         super();
     }

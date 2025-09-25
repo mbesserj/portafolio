@@ -5,8 +5,6 @@ import com.app.entities.KardexEntity;
 import com.app.entities.SaldoEntity;
 import com.app.interfaces.KardexApiInterfaz;
 import com.app.interfaces.SaldoApiInterfaz;
-import com.costing.api.KardexApi;
-import com.costing.api.SaldoApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
@@ -21,8 +19,8 @@ public class ResultadoInstrumentoService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResultadoInstrumentoService.class);
     
-    private final KardexApiInterfaz kardexService = KardexApi.createService();
-    private final SaldoApiInterfaz saldoService = SaldoApi.createService();
+    private final KardexApiInterfaz kardexService;
+    private final SaldoApiInterfaz saldoService;
     private final ResultadoInsInterfaz resultadoInstrumentoRepository;
 
     /**
@@ -32,13 +30,18 @@ public class ResultadoInstrumentoService {
      * @param resultadoInstrumentoRepository Repositorio para consultas de resultados
      * @throws IllegalArgumentException si algún parámetro es null
      */
-    public ResultadoInstrumentoService(ResultadoInsInterfaz resultadoInstrumentoRepository) {
+    public ResultadoInstrumentoService(SaldoApiInterfaz saldoService, KardexApiInterfaz kardexService, ResultadoInsInterfaz resultadoInstrumentoRepository) {
         if (kardexService == null) {
             throw new IllegalArgumentException("KardexApi no puede ser null");
+        }
+        if (saldoService == null) {
+            throw new IllegalArgumentException("SaldoApi no puede ser null");
         }
         if (resultadoInstrumentoRepository == null) {
             throw new IllegalArgumentException("ResultadoInstrumentoRepository no puede ser null");
         }
+        this.kardexService = kardexService;
+        this.saldoService = saldoService;
         this.resultadoInstrumentoRepository = resultadoInstrumentoRepository;
     }
 

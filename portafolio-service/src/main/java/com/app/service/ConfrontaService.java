@@ -1,11 +1,14 @@
 package com.app.service;
 
 import com.app.dto.ConfrontaSaldoDto;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.NoResultException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import com.app.interfaces.ConfrontaRepInterfaz;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servicio que orquesta la confrontación de saldos.
@@ -14,6 +17,8 @@ public class ConfrontaService extends AbstractRepository {
 
     private static final String QUERY_ULTIMA_FECHA_SALDOS = 
         "SELECT MAX(s.fecha) FROM SaldoEntity s";
+    
+    private static final Logger logger = LoggerFactory.getLogger(ConfrontaService.class);
 
     private final ConfrontaRepInterfaz confrontaRepository;
 

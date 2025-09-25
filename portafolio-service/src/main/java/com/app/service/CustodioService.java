@@ -3,12 +3,15 @@ package com.app.service;
 import com.app.dao.CustodioDao;
 import com.app.entities.CustodioEntity;
 import com.app.entities.EmpresaEntity;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CustodioService extends AbstractRepository {
 
@@ -23,6 +26,15 @@ public class CustodioService extends AbstractRepository {
         ORDER BY c.cuenta ASC
         """;
 
+    private static final Logger logger = LoggerFactory.getLogger(CustodioService.class);
+
+    /**
+     * Constructor custodioService.
+     */
+    public CustodioService() {
+        super();
+    }
+    
     /**
      * Obtiene todos los custodios ordenados por nombre.
      * 

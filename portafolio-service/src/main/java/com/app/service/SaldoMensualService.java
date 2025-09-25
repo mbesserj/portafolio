@@ -1,14 +1,23 @@
 package com.app.service;
 
 import com.app.dto.SaldoMensualDto;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SaldoMensualService extends AbstractRepository {
+    
+    private static final Logger logger = LoggerFactory.getLogger(SaldoMensualService.class);
+    
+    public SaldoMensualService() {
+        super();
+    }
 
     public List<SaldoMensualDto> obtenerSaldosMensuales(String razonSocial, String custodio, int anio, String moneda) {
         return executeReadOnly(em -> {

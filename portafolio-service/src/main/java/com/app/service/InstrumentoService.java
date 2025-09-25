@@ -7,13 +7,25 @@ import com.app.entities.EmpresaEntity;
 import com.app.entities.InstrumentoEntity;
 import com.app.entities.ProductoEntity;
 import com.app.entities.TransaccionEntity;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstrumentoService extends AbstractRepository {
 
+    private static final Logger logger = LoggerFactory.getLogger(InstrumentoService.class);
+
+    /**
+     * Constructor.
+     */
+    public InstrumentoService() {
+        super();
+    }
+    
     public List<InstrumentoEntity> obtenerTodos() {
         return executeReadOnly(em -> {
             try {

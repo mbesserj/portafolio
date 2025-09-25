@@ -1,12 +1,14 @@
 package com.app.service;
 
 import com.app.dto.ResumenHistoricoDto;
+import com.app.interfaces.AbstractRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import com.app.interfaces.ResumenHistoricoInterfaz;
 
-public class ResumenHistoricoService {
+public class ResumenHistoricoService extends AbstractRepository {
+    
     private final ResumenHistoricoInterfaz repository;
 
     public ResumenHistoricoService(ResumenHistoricoInterfaz repository) {

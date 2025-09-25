@@ -2,14 +2,23 @@ package com.app.service;
 
 import com.app.dao.EmpresaDao;
 import com.app.entities.EmpresaEntity;
+import com.app.interfaces.AbstractRepository;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmpresaService extends AbstractRepository {
 
     private static final String QUERY_EMPRESAS_CON_TRANSACCIONES = 
         "SELECT DISTINCT t.empresa FROM TransaccionEntity t ORDER BY t.empresa.razonSocial ASC";
 
+    private static final Logger logger = LoggerFactory.getLogger(EmpresaService.class);
+
+    public EmpresaService() {
+        super();
+    }
+    
     /**
      * Obtiene todas las empresas del sistema.
      * 

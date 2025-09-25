@@ -1,12 +1,14 @@
 package com.app.repositorio;
 
-import com.app.service.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import com.app.interfaces.PrecioRepInterfaz;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementación del Repositorio de Precios.
@@ -14,6 +16,8 @@ import com.app.interfaces.PrecioRepInterfaz;
  */
 public class PrecioRepositoryImpl extends AbstractRepository implements PrecioRepInterfaz {
     
+    private static final Logger logger = LoggerFactory.getLogger(PrecioRepositoryImpl.class);
+
     private static final String ULTIMOS_PRECIOS_QUERY = """
         SELECT s.instrumento.id, s.precio FROM SaldoEntity s
         WHERE s.empresa.id = :empresaId AND s.custodio.id = :custodioId AND s.fecha = (

@@ -1,8 +1,11 @@
 package com.app.service;
 
 import com.app.entities.UsuarioEntity;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -13,6 +16,8 @@ public class AuthenticationService extends AbstractRepository {
     private static final String QUERY_USUARIO_BY_USERNAME = 
         "SELECT u FROM UsuarioEntity u WHERE u.usuario = :user";
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+    
     private final BCryptPasswordEncoder passwordEncoder;
 
     public AuthenticationService() {

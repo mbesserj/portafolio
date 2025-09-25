@@ -1,14 +1,18 @@
 package com.app.repositorio;
 
 import com.app.dto.ConfrontaSaldoDto;
-import com.app.service.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.Query;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import com.app.interfaces.ConfrontaRepInterfaz;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfrontaRepositoryImpl extends AbstractRepository implements ConfrontaRepInterfaz {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfrontaRepositoryImpl.class);
 
     private static final String CONFRONTA_QUERY = """
         WITH 

@@ -3,6 +3,7 @@ package com.app.service;
 import com.app.dto.InventarioCostoDto;
 import com.app.dto.ResumenInstrumentoDto;
 import com.app.entities.SaldoEntity;
+import com.app.interfaces.AbstractRepository;
 import com.app.interfaces.KardexApiInterfaz;
 import com.app.interfaces.SaldoApiInterfaz;
 import com.app.repositorio.AggregatesForInstrument;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ResumenPortafolioService {
+public class ResumenPortafolioService extends AbstractRepository {
 
     private final SaldoApiInterfaz saldoService;
     private final KardexApiInterfaz kardexService;

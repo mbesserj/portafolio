@@ -1,10 +1,14 @@
 package com.app.repositorio;
 
-import com.app.service.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.Query;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AggregatesForInstrument extends AbstractRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(AggregatesForInstrument.class);
 
     private static final String AGGREGATES_QUERY = """
         SELECT

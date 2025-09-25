@@ -1,15 +1,19 @@
 package com.app.repositorio;
 
 import com.app.dto.ResumenHistoricoDto;
-import com.app.service.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.app.interfaces.ResumenHistoricoInterfaz;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResumenHistoricoRepositoryImpl extends AbstractRepository implements ResumenHistoricoInterfaz {
+
+    private static final Logger logger = LoggerFactory.getLogger(ResumenHistoricoRepositoryImpl.class);
 
     private static final String RESUMEN_HISTORICO_QUERY = """
         WITH 

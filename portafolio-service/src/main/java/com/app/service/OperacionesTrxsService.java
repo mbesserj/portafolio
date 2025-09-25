@@ -2,10 +2,13 @@ package com.app.service;
 
 import com.app.dto.OperacionesTrxsDto;
 import com.app.enums.TipoEnumsCosteo;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.TypedQuery;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OperacionesTrxsService extends AbstractRepository {
 
@@ -32,6 +35,15 @@ public class OperacionesTrxsService extends AbstractRepository {
             t.id ASC
         """;
 
+    private static final Logger logger = LoggerFactory.getLogger(OperacionesTrxsService.class);
+
+    /**
+     * Constructor.
+     */
+    public OperacionesTrxsService() {
+        super();
+    }
+    
     /**
      * Obtiene las transacciones de un grupo específico con cálculos de saldos acumulados.
      * 

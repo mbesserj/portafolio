@@ -1,8 +1,11 @@
 package com.app.service;
 
 import com.app.entities.*;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.TypedQuery;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FiltroService extends AbstractRepository {
 
@@ -21,6 +24,15 @@ public class FiltroService extends AbstractRepository {
         WHERE t.empresa.id = :empresaId AND t.custodio.id = :custodioId AND t.cuenta = :cuenta
         ORDER BY t.instrumento.instrumentoNemo ASC
         """;
+    
+    private static final Logger logger = LoggerFactory.getLogger(FiltroService.class);
+
+    /**
+     * Constructor vacio.
+     */
+    public FiltroService() {
+        super();
+    }
 
     /**
      * Obtiene todas las empresas que tienen transacciones registradas.

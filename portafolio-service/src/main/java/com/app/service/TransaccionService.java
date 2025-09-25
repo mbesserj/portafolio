@@ -3,11 +3,14 @@ package com.app.service;
 
 import com.app.dto.TransaccionManualDto;
 import com.app.entities.*;
+import com.app.interfaces.AbstractRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
 import java.math.BigDecimal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TransaccionService extends AbstractRepository {
 
@@ -20,6 +23,12 @@ public class TransaccionService extends AbstractRepository {
         WHERE t.id = :id
         """;
 
+    private static final Logger logger = LoggerFactory.getLogger(TransaccionService.class);
+
+    public TransaccionService() {
+        super();
+    }
+    
     /**
      * Obtiene una TransaccionEntity por su ID, cargando de forma anticipada todas las relaciones.
      * 

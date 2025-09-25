@@ -2,13 +2,18 @@ package com.app.service;
 
 import com.app.dao.PerfilDao;
 import com.app.entities.PerfilEntity;
+import com.app.interfaces.AbstractRepository;
 import java.util.Collections;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Servicio para gestionar la lógica de negocio de los perfiles.
  */
 public class PerfilService extends AbstractRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(PerfilService.class);
 
     /**
      * Busca un perfil por nombre o lo crea si no existe.

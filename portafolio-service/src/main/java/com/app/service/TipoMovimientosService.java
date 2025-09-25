@@ -6,6 +6,7 @@ import com.app.dto.TipoMovimientoEstado;
 import com.app.entities.MovimientoContableEntity;
 import com.app.entities.TipoMovimientoEntity;
 import com.app.enums.TipoEnumsCosteo;
+import com.app.interfaces.AbstractRepository;
 import com.app.interfaces.TipoMovimientoInterfaz;
 import com.app.utiles.LibraryInitializer;
 import jakarta.persistence.EntityManager;
@@ -16,7 +17,7 @@ import java.util.Optional;
  * Servicio de negocio para operaciones relacionadas con Tipos de Movimiento.
  * Contiene la lógica para actualizar el estado contable.
  */
-public class TipoMovimientosService {
+public class TipoMovimientosService extends AbstractRepository {
 
     private final TipoMovimientoInterfaz tipoMovimientoRepository;
 
@@ -26,6 +27,7 @@ public class TipoMovimientosService {
      * @param tipoMovimientoRepository El repositorio para acceder a los datos de TipoMovimiento.
      */
     public TipoMovimientosService(TipoMovimientoInterfaz tipoMovimientoRepository) {
+        super();
         this.tipoMovimientoRepository = tipoMovimientoRepository;
     }
 

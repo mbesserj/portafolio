@@ -1,7 +1,7 @@
 package com.app.repositorio;
 
 import com.app.dto.ResultadoInstrumentoDto;
-import com.app.service.AbstractRepository;
+import com.app.interfaces.AbstractRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
