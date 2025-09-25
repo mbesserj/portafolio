@@ -53,9 +53,9 @@ public class ServiceFactory {
     private final ConfrontaService confrontaService = new ConfrontaService();
     private final OperacionesTrxsService operacionesTrxsService = new OperacionesTrxsService();
     private final ProblemasTrxsService problemasTrxsService = new ProblemasTrxsService();
-    private final ProcesoCargaDiaria procesoCargaDiaria = new ProcesoCargaDiaria();
-    private final ProcesoCargaInicial procesoCargaInicial = new ProcesoCargaInicial();
-    private final ProcesoCosteoInicial procesoCosteoInicial = new ProcesoCosteoInicial();
+    private final ProcesoCargaDiariaService procesoCargaDiaria = new ProcesoCargaDiariaService();
+    private final ProcesoCargaInicialService procesoCargaInicial = new ProcesoCargaInicialService();
+    private final ProcesoCosteoInicialService procesoCosteoInicial = new ProcesoCosteoInicialService();
     private final NormalizarService normalizarService = new NormalizarService();
     private final FusionInstrumentoService fusionInstrumentoService = new FusionInstrumentoService();
     private final UsuarioService usuarioService = new UsuarioService();
@@ -65,7 +65,7 @@ public class ServiceFactory {
     private final ResumenHistoricoService resumenHistoricoService = new ResumenHistoricoService(resumenHistoricoRepository);
     private final SaldoActualService saldoActualService = new SaldoActualService(kardexRepService, precioRepService);
     private final TipoMovimientosService tipoMovimientosService = new TipoMovimientosService(tipoMovimientoRepo);
-
+    
     public ServiceFactory() {
         initializeControllerSuppliers();
         logger.info("ServiceFactory (con Facade integrado) inicializado.");
@@ -156,5 +156,7 @@ public class ServiceFactory {
     public CostingApi getCosteoService() { return costeoService; }
     public NormalizarService getNormalizarService() { return normalizarService; }
     public PortafolioFacade getPortafolioFacade() { return facadeService; }
+    public AuthenticationService getAuthenticationService() { return authenticationService; }
+    public UsuarioService getUsuarioService() { return usuarioService; }
     
 }

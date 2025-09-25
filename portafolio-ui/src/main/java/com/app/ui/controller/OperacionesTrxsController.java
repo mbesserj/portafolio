@@ -370,51 +370,6 @@ public class OperacionesTrxsController implements MainPaneAware {
         lanzarVentanaAjuste(TipoAjuste.EGRESO);
     }
 
-    private void lanzarVentanaAjuste(TipoAjuste tipo) {
-        OperacionesTrxsDto dtoSeleccionado = tablaTransacciones.getSelectionModel().getSelectedItem();
-        if (dtoSeleccionado == null) {
-            Alertas.mostrarAlertaInfo("Acción Requerida", "Por favor, seleccione una transacción de referencia.");
-            return;
-        }
-
-        if (tipo == TipoAjuste.INGRESO && !dtoSeleccionado.isParaRevision()) {
-            Alertas.mostrarAlertaInfo("Acción No Requerida", "El ajuste de ingreso es solo para transacciones marcadas para revisión (en rojo).");
-            return;
-        }
-
-        TransaccionEntity txSeleccionada = transaccionService.obtenerTransaccionPorId(dtoSeleccionado.getId());
-        if (txSeleccionada == null) {
-            Alertas.mostrarAlertaError("Error", "No se pudo encontrar la transacción completa con ID: " + dtoSeleccionado.getId());
-            return;
-        }
-        try {
-
-            AjustePropuestoDto propuesta = costoService.proponerAjusteManual(txSeleccionada, tipo);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AjusteManualView.fxml"), this.resourceBundle);
-            Parent root = loader.load();
-            AjusteManualController controller = loader.getController();
-            controller.initData(txSeleccionada, tipo, propuesta);
-
-            Stage stage = new Stage();
-            stage.setTitle("Crear Ajuste Manual");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.initOwner(mainPane.getScene().getWindow());
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-
-            if (controller.isAprobado()) {
-                BigDecimal cantidadFinal = controller.getCantidadFinal();
-                BigDecimal precioFinal = controller.getPrecioFinal();
-                costoService.crearAjusteManual(txSeleccionada, tipo, cantidadFinal, precioFinal);
-                Alertas.mostrarAlertaExito("Éxito", "La transacción de ajuste ha sido creada.");
-                handleBuscar();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Alertas.mostrarAlertaError("Error de UI", "No se pudo cargar la ventana de ajuste.");
-        }
-    }
-
     @FXML
     private void handleEliminarAjuste() {
         OperacionesTrxsDto selectedItem = tablaTransacciones.getSelectionModel().getSelectedItem();
@@ -454,26 +409,6 @@ public class OperacionesTrxsController implements MainPaneAware {
         } else {
             Alertas.mostrarAlertaAdvertencia("Transacción Inválida", "La transacción seleccionada no es un tipo de ajuste o saldo que se pueda eliminar.");
         }
-    }
-
-    private void ejecutarTareaDeFusion(Long idAntiguo, Long idNuevo) {
-        Task<Void> fusionTask = new Task<>() {
-            @Override
-            protected Void call() throws Exception {
-                updateMessage("Fusionando instrumentos...");
-                instrumentoAdminService.fusionarYPrepararRecosteo(idAntiguo, idNuevo);
-                return null;
-            }
-        };
-        fusionTask.setOnSucceeded(e -> {
-            Alertas.mostrarAlertaExito("Fusión Exitosa", "Fusión completada. Se recomienda ejecutar el costeo general.");
-        });
-        fusionTask.setOnFailed(e -> {
-            Alertas.mostrarAlertaError("Fallo en Fusión", "La fusión falló: " + fusionTask.getException().getMessage());
-            fusionTask.getException().printStackTrace();
-        });
-        progressIndicator.visibleProperty().bind(fusionTask.runningProperty());
-        new Thread(fusionTask).start();
     }
 
     @FXML
@@ -571,6 +506,65 @@ public class OperacionesTrxsController implements MainPaneAware {
         new Thread(task).start();
     }
 
+    @FXML
+    private void handleCerrar() {
+        if (mainPane != null) {
+            mainPane.setCenter(null);
+        }
+    }
+
+    @Override
+    public void setMainPane(BorderPane mainPane) {
+        this.mainPane = mainPane;
+    }
+    
+    // --- Métodos privados de uso interno ---
+
+    private void lanzarVentanaAjuste(TipoAjuste tipo) {
+        OperacionesTrxsDto dtoSeleccionado = tablaTransacciones.getSelectionModel().getSelectedItem();
+        if (dtoSeleccionado == null) {
+            Alertas.mostrarAlertaInfo("Acción Requerida", "Por favor, seleccione una transacción de referencia.");
+            return;
+        }
+
+        if (tipo == TipoAjuste.INGRESO && !dtoSeleccionado.isParaRevision()) {
+            Alertas.mostrarAlertaInfo("Acción No Requerida", "El ajuste de ingreso es solo para transacciones marcadas para revisión (en rojo).");
+            return;
+        }
+
+        TransaccionEntity txSeleccionada = transaccionService.obtenerTransaccionPorId(dtoSeleccionado.getId());
+        if (txSeleccionada == null) {
+            Alertas.mostrarAlertaError("Error", "No se pudo encontrar la transacción completa con ID: " + dtoSeleccionado.getId());
+            return;
+        }
+        try {
+
+            AjustePropuestoDto propuesta = costoService.proponerAjusteManual(txSeleccionada, tipo);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AjusteManualView.fxml"), this.resourceBundle);
+            Parent root = loader.load();
+            AjusteManualController controller = loader.getController();
+            controller.initData(txSeleccionada, tipo, propuesta);
+
+            Stage stage = new Stage();
+            stage.setTitle("Crear Ajuste Manual");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initOwner(mainPane.getScene().getWindow());
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            if (controller.isAprobado()) {
+                BigDecimal cantidadFinal = controller.getCantidadFinal();
+                BigDecimal precioFinal = controller.getPrecioFinal();
+                costoService.crearAjusteManual(txSeleccionada, tipo, cantidadFinal, precioFinal);
+                Alertas.mostrarAlertaExito("Éxito", "La transacción de ajuste ha sido creada.");
+                handleBuscar();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Alertas.mostrarAlertaError("Error de UI", "No se pudo cargar la ventana de ajuste.");
+        }
+    }
+
     private void ejecutarTareaDeRecosteo(TransaccionEntity tx) {
         String claveAgrupacion = tx.getEmpresa().getId() + "|" + tx.getCuenta() + "|" + tx.getCustodio().getId() + "|" + tx.getInstrumento().getId();
         Task<Void> recosteoTask = new Task<>() {
@@ -601,15 +595,23 @@ public class OperacionesTrxsController implements MainPaneAware {
         return transaccionService.obtenerTransaccionPorId(dto.getId());
     }
 
-    @FXML
-    private void handleCerrar() {
-        if (mainPane != null) {
-            mainPane.setCenter(null);
-        }
-    }
-
-    @Override
-    public void setMainPane(BorderPane mainPane) {
-        this.mainPane = mainPane;
+    private void ejecutarTareaDeFusion(Long idAntiguo, Long idNuevo) {
+        Task<Void> fusionTask = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                updateMessage("Fusionando instrumentos...");
+                instrumentoAdminService.fusionarYPrepararRecosteo(idAntiguo, idNuevo);
+                return null;
+            }
+        };
+        fusionTask.setOnSucceeded(e -> {
+            Alertas.mostrarAlertaExito("Fusión Exitosa", "Fusión completada. Se recomienda ejecutar el costeo general.");
+        });
+        fusionTask.setOnFailed(e -> {
+            Alertas.mostrarAlertaError("Fallo en Fusión", "La fusión falló: " + fusionTask.getException().getMessage());
+            fusionTask.getException().printStackTrace();
+        });
+        progressIndicator.visibleProperty().bind(fusionTask.runningProperty());
+        new Thread(fusionTask).start();
     }
 }

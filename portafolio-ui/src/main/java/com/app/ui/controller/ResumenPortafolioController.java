@@ -154,7 +154,7 @@ public class ResumenPortafolioController implements Initializable {
         
         tableResumen.setItems(resumenData);
     }
-    
+
     /**
      * Configura una columna para mostrar valores de moneda
      */
@@ -359,7 +359,25 @@ public class ResumenPortafolioController implements Initializable {
             () -> setLoadingState(false, "")
         );
     }
-    
+
+    /**
+     * Refresca los datos actuales
+     */
+    @FXML
+    private void refrescarDatos() {
+        cargarResumen();
+    }
+
+    /**
+     * Exporta los datos a Excel/CSV
+     */
+    @FXML
+    private void exportarDatos() {
+        // TODO: Implementar exportación
+        showAlert(Alert.AlertType.INFORMATION, "Exportar", 
+                 "Funcionalidad de exportación en desarrollo");
+    }
+   
     /**
      * Callback cuando se carga el resumen exitosamente
      */
@@ -413,24 +431,6 @@ public class ResumenPortafolioController implements Initializable {
                 }
             }
         }
-    }
-    
-    /**
-     * Refresca los datos actuales
-     */
-    @FXML
-    private void refrescarDatos() {
-        cargarResumen();
-    }
-    
-    /**
-     * Exporta los datos a Excel/CSV
-     */
-    @FXML
-    private void exportarDatos() {
-        // TODO: Implementar exportación
-        showAlert(Alert.AlertType.INFORMATION, "Exportar", 
-                 "Funcionalidad de exportación en desarrollo");
     }
     
     /**
