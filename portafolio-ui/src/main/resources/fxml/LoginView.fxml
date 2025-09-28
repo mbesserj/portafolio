@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Contenedor principal con un tamaño preferido para la ventana -->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<HBox alignment="CENTER" prefHeight="450.0" prefWidth="750.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Columna Izquierda (Imagen) -->
+    <!-- CAMBIO 1: Se elimina el ancho fijo (prefWidth) del VBox. 
+         Ahora su tamaño dependerá de su contenido (la imagen). -->
+    <VBox alignment="CENTER" style="-fx-background-color: #0d1117;" HBox.hgrow="NEVER">
+        <!-- CAMBIO 2: Se ajusta el tamaño deseado directamente en la imagen. 
+             El VBox se adaptará a este tamaño. -->
+        <ImageView fitHeight="450.0" fitWidth="380.0" pickOnBounds="true" smooth="false" VBox.vgrow="NEVER">
+            <image>
+                <Image url="@../images/login.png" />
+            </image>
+         <VBox.margin>
+            <Insets left="-80.0" />
+         </VBox.margin>
+        </ImageView>
+    </VBox>
+
+    <!-- Columna Derecha (Formulario) -->
+    <VBox alignment="CENTER" maxWidth="500.0" prefHeight="450.0" prefWidth="500.0" style="-fx-background-color: #f7fafc;" HBox.hgrow="ALWAYS">
+        <children>
+            <VBox alignment="CENTER_LEFT" maxWidth="460.0" prefHeight="380.0" prefWidth="451.0" spacing="25.0">
+                <padding>
+                    <Insets bottom="40.0" left="40.0" right="40.0" top="40.0" />
+                </padding>
+                <children>
+                    <Label text="Bienvenido">
+                        <font>
+                            <Font name="System Bold" size="32.0" />
+                        </font>
+                    </Label>
+
+                    <VBox spacing="8.0">
+                        <children>
+                            <Label style="-fx-font-size: 14px; -fx-text-fill: #4a5568;" text="Usuario" />
+                            <TextField fx:id="txtUsuario" promptText="su.usuario" style="-fx-font-size: 14px; -fx-pref-height: 45px; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;" />
+                        </children>
+                    </VBox>
+
+                    <VBox spacing="8.0">
+                        <children>
+                            <Label style="-fx-font-size: 14px; -fx-text-fill: #4a5568;" text="Contraseña" />
+                            <PasswordField fx:id="txtPassword" promptText="••••••••••" style="-fx-font-size: 14px; -fx-pref-height: 45px; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;" />
+                        </children>
+                    </VBox>
+
+                    <Button fx:id="btnIngresar" defaultButton="true" onAction="#handleIngresar" prefHeight="50.0" prefWidth="400.0" style="-fx-background-color: #2c5282; -fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 8;" text="Ingresar" />
+                    <Button fx:id="btnSalir" onAction="#handleSalir" prefHeight="40.0" prefWidth="400.0" style="-fx-background-color: #e2e8f0; -fx-text-fill: #4a5568; -fx-font-size: 14px; -fx-background-radius: 8; -fx-border-color: #cbd5e0; -fx-border-radius: 8;" text="Salir" />
+
+                    <Label fx:id="lblMensaje" alignment="CENTER" maxWidth="Infinity" style="-fx-font-size: 14px;" textFill="#e53e3e" />
+
+                </children>
+            <VBox.margin>
+               <Insets />
+            </VBox.margin>
+            </VBox>
+        </children>
+      <HBox.margin>
+         <Insets />
+      </HBox.margin>
+    </VBox>
+</HBox>

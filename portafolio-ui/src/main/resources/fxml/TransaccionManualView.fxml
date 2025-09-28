@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="15" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.ui.controller.TransaccionManualController">
+
+    <Label style="-fx-font-weight: bold; -fx-font-size: 16px;" text="Crear Transacción Manual" />
+
+    <VBox spacing="10" style="-fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 10; -fx-border-radius: 5;">
+        <fx:define>
+            <Insets fx:id="GRID_PADDING" top="10" />
+        </fx:define>
+
+        <CheckBox fx:id="chkCrearNuevo" text="Crear nuevo instrumento" />
+
+        <GridPane fx:id="paneExistente" hgap="10" vgap="10">
+            <padding>
+                <Insets top="10.0" />
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints prefWidth="118.0" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <Label text="Instrumento:" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cmbInstrumento" prefWidth="300.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+         <rowConstraints>
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <GridPane fx:id="paneNuevo" hgap="10" managed="false" vgap="10" visible="false">
+            <padding>
+                <Insets top="10.0" />
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints prefWidth="130.0" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <Label text="Nemo:" GridPane.rowIndex="0" />
+            <TextField fx:id="txtNemoNuevo" promptText="Ej: FALABELLA" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label text="Nombre:" GridPane.rowIndex="1" />
+            <TextField fx:id="txtNombreNuevo" promptText="Ej: Falabella S.A." GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+    </VBox>
+
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="130.0" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+
+        <!-- Nuevos campos -->
+        <Label text="Empresa:" GridPane.rowIndex="0" />
+        <ComboBox fx:id="cmbEmpresa" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+        <Label text="Custodio:" GridPane.rowIndex="1" />
+        <ComboBox fx:id="cmbCustodio" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+        <Label text="Cuenta:" GridPane.rowIndex="2" />
+        <TextField fx:id="txtCuenta" maxWidth="80.0" minWidth="80.0" prefWidth="80.0" promptText="Ej: 1" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+        <!-- Campos existentes -->
+        <Label text="Fecha:" GridPane.rowIndex="3" />
+        <DatePicker fx:id="dpFecha" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+        <Label text="Tipo de Movimiento:" GridPane.rowIndex="4" />
+        <ComboBox fx:id="cmbTipoMovimiento" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+        <Label text="Cantidad:" GridPane.rowIndex="5" />
+        <TextField fx:id="txtCantidad" promptText="Ej: 100.50" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+        <Label text="Precio:" GridPane.rowIndex="6" />
+        <TextField fx:id="txtPrecio" promptText="Ej: 1250.75" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+        <Label text="Folio (Opcional):" GridPane.rowIndex="7" />
+        <TextField fx:id="txtFolio" promptText="Dejar en blanco para 'MANUAL'" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+
+        <Label text="Moneda:" GridPane.rowIndex="8" />
+        <TextField fx:id="txtMoneda" promptText="CLP o USD" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+
+        <Label text="Glosa / Comentario:" GridPane.rowIndex="9" />
+        <TextField fx:id="txtGlosa" promptText="Información sobre la operación." GridPane.columnIndex="1" GridPane.rowIndex="9" />
+
+        <Label text="Comisiones:" GridPane.rowIndex="10" />
+        <TextField fx:id="txtComisiones" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+
+        <Label text="Gastos:" GridPane.rowIndex="11" />
+        <TextField fx:id="txtGastos" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+
+        <Label text="IVA:" GridPane.rowIndex="12" />
+        <TextField fx:id="txtIva" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="12" />
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+    <HBox alignment="CENTER_RIGHT" spacing="10" style="-fx-padding: 15 0 0 0;">
+        <Button fx:id="btnCancelar" text="Cancelar" onAction="#handleCancelar" />
+        <Button fx:id="btnGuardar" text="Guardar" onAction="#handleGuardar" />
+    </HBox>
+</VBox>

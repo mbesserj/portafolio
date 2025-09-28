@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane fx:id="mainPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.ui.controller.AppController">
+    <top>
+        <VBox>
+            <children>
+                <MenuBar prefHeight="17.0" prefWidth="356.0">
+                    <menus>
+                        <Menu text="%menu.archivo">
+                            <items>
+                                <SeparatorMenuItem />
+                                <MenuItem onAction="#handleSalir" text="%menu.archivo.salir" />
+                            </items>
+                        </Menu>
+                        <Menu text="%menu.informes">
+                            <items>
+                                <MenuItem onAction="#handleMostrarKardex" text="%menu.informes.kardex" />
+                                <MenuItem onAction="#handleMostrarSaldos" text="%menu.informes.saldos" />
+                                <MenuItem onAction="#handleMostrarSaldosMensuales" text="%menu.informes.saldosMensuales" />
+                                <MenuItem onAction="#handleMostrarResumenSaldos" text="%menu.informes.resumenEmpresas" />
+                                <MenuItem onAction="#handleMostrarConfrontaSaldos" text="%menu.informes.confronta" />
+                                <SeparatorMenuItem />
+                                <MenuItem onAction="#handleMostrarResultadosInstrumento" text="%menu.informes.resultado" />
+                                <MenuItem onAction="#handleMostrarResumenPortafolio" text="%menu.informes.resumen" />
+                                <MenuItem onAction="#handleMostrarResumenHistorico" text="%menu.informes.resumen.hisotico" />
+                                <SeparatorMenuItem />
+                                <MenuItem onAction="#handleMostrarTransacciones" text="%menu.informes.transacciones" />
+                                <MenuItem onAction="#handleMostrarTrxsProblemas" text="%menu.informes.problemas" />
+                            </items>
+                        </Menu>
+                        <Menu text="%menu.procesos">
+                            <items>
+                                <MenuItem onAction="#handleCargarArchivos" text="%menu.procesos.carga_datos" />
+                                <MenuItem onAction="#handleMostrarTiposMovimiento" text="%menu.procesos.tiposMovimiento" />
+                                <MenuItem onAction="#handleEjecutarCosteo" text="%menu.procesos.costeo" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem onAction="#handleTransaccionManual" text="%menu.transaccion.manual" />
+                            </items>
+                        </Menu>
+                        <Menu text="%menu.contabilidad">
+                            <items>
+                                <MenuItem onAction="#handleMostrarCierreContable" text="%menu.contabilidad.cierre" />
+                                <MenuItem onAction="#handleCargaInicial" text="%menu.contabilidad.saldoapertura" />
+                                <SeparatorMenuItem mnemonicParsing="false" />
+                                <MenuItem onAction="#handleReprocesarNormalizacion" text="%menu.contabilidad.reproceso" />
+                            </items>
+                        </Menu>
+                        <Menu text="%menu.ayuda">
+                        </Menu>
+                    </menus>
+                </MenuBar>
+            </children>
+        </VBox>
+    </top>
+    <center>
+    </center>
+</BorderPane>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox spacing="15" style="-fx-padding: 20;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.app.ui.controller.KardexDetallesController">
+    <GridPane hgap="10" vgap="8">
+        <columnConstraints>
+            <ColumnConstraints prefWidth="120.0" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <Label style="-fx-font-weight: bold;" text="Fecha Transacción:" GridPane.rowIndex="0" />
+        <Label fx:id="lblFechaTran" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label style="-fx-font-weight: bold;" text="Operación:" GridPane.rowIndex="1" />
+        <Label fx:id="lblTipoOper" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label style="-fx-font-weight: bold;" text="Nemo:" GridPane.rowIndex="2" />
+        <Label fx:id="lblNemo" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label style="-fx-font-weight: bold;" text="Utilidad/Pérdida:" GridPane.rowIndex="3" />
+        <Label fx:id="lblUtilidad" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Label style="-fx-font-weight: bold;" text="Saldo Cantidad:" GridPane.rowIndex="4" />
+        <Label fx:id="lblSaldoCantidad" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label style="-fx-font-weight: bold;" text="Costo Inversión:" GridPane.rowIndex="5" />
+        <Label fx:id="lblSaldoValor" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+    </GridPane>
+    <HBox alignment="CENTER_RIGHT" style="-fx-padding: 15 0 0 0;">
+        <Button onAction="#handleCerrar" text="Cerrar" />
+    </HBox>
+</VBox>

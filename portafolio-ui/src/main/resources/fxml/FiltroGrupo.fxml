@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<fx:root hgap="10" type="javafx.scene.layout.GridPane" vgap="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    
+    <Label text="Empresa:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+    <ComboBox fx:id="cmbEmpresa" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+    <Label text="Custodio:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    <ComboBox fx:id="cmbCustodio" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+    <Label text="Cuenta:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <ComboBox fx:id="cmbCuenta" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+    <Label text="Instrumento (Nemo):" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+    <ComboBox fx:id="cmbNemonico" prefWidth="250.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+    
+    <columnConstraints>
+        <ColumnConstraints prefWidth="150.0" />
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+</fx:root>
