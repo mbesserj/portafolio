@@ -26,6 +26,5 @@ module com.app.portafolio.costing {
      * permanecerán encapsuladas y no serán visibles para otros módulos.
      */
     exports com.costing.api;
-    exports com.app.interfaz;
 }
 
